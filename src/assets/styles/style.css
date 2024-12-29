@@ -1,0 +1,275 @@
+
+/* CSS General */
+:root {
+    --color1: #2f364c;
+    --color2: #514a6b;
+    --color3: #8a6888;
+    --color4: #d092b4;
+    --color5: #e5bad4;
+
+    /* Colores adicionales */
+    --red: #b85464; /* Rojo apagado */
+    --red-hover: #a24353; /* Rojo para hover */
+
+    --green: #6a946c; /* Verde apagado */
+    --green-hover: #58805a; /* Verde para hover */
+
+    --yellow: #c9b175; /* Amarillo apagado */
+    --yellow-hover: #b29f65; /* Amarillo para hover */
+
+    --orange: #d08d64; /* Anaranjado apagado */
+    --orange-hover: #b8794d; /* Anaranjado para hover */
+}
+
+
+html {
+    font-size: 14px;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--color2);
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: var(--color1);
+}
+
+
+/* Filtros */
+.filters {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    padding: 5px;
+}
+
+.filters input, .filters button, .filters select {
+    padding: 10px;
+    margin: 0 10px;
+    border-radius: 5px;
+    border: 1px solid var(--color3);
+    background-color: var(--color2);
+    color: white;
+    font-size: 1em;
+    width: 48%; /* Se ajusta a la mitad del contenedor */    
+}
+
+.filters input {
+    width: 75%; /* Ajusta el tamaño de búsqueda */
+}
+
+.filters select {
+    width: 25%; /* Ajusta el tamaño del selector */
+}
+
+.filters button {
+    background-color: var(--color3);
+    width: 25%; /* Ajusta el tamaño del selector */
+}
+
+.filters button:hover {
+    background-color: var(--color4);
+}
+
+
+/* Favoritos */
+.favoritos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); /* Tarjetas con tamaño mínimo de 250px */
+    gap: 16px;
+    padding: 16px;
+}
+
+.favorito {
+    border: 1px solid var(--color3);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+    background-color: var(--color2);
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s, box-shadow 0.2s;
+
+    display: flex;
+    flex-direction: column; /* Alinea los elementos en columna */
+
+}
+
+.favorito img {
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+
+.favorito h2 {
+    font-size: 1em;
+    margin: 8px 0;
+    color: var(--color5);
+        
+    line-height: 1.2;
+    height: calc(1.2em * 2);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2; 
+    text-overflow: ellipsis;
+}
+
+.favorito p {
+    font-size: 0.85em;
+    color: var(--color4);
+    line-height: 1.2;
+    max-height: calc(1.2em * 2);
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2; 
+    text-overflow: ellipsis;
+}
+
+.favorito span {
+    font-size: 0.8em;
+    color: var(--color5);
+}
+
+.favorito:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Paginacion */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 20px 0;
+    gap: 5px;
+}
+
+.pagination button {
+    background-color: var(--color2);
+    color: var(--color5);
+    border: none;
+    border-radius: 4px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.pagination button:hover {
+    background-color: var(--color3);
+    transform: scale(1.05);
+}
+
+.pagination button:disabled {
+    background-color: var(--color4);
+    cursor: not-allowed;
+}
+
+.pagination .active {
+    background-color: var(--color5);
+    color: var(--color1);
+    font-weight: bold;
+}
+
+.pagination .dots {
+    color: var(--color5);
+    font-size: 0.9em;
+    margin: 0 5px;
+}
+
+/* Contenedor para el select y el botón */
+.status-container {
+    display: flex;
+    justify-content: space-between; /* Espacio entre los elementos */
+    align-items: center; /* Alinea verticalmente los elementos */
+    width: 100%; /* Asegúrate de que el contenedor ocupe todo el ancho disponible */
+    gap: 10px; /* Espacio entre los elementos */
+
+    margin-top: auto; /* Empuja el contenedor hacia la parte inferior de la tarjeta */
+}
+
+/* Estilos para el select */
+.status-select {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--color3);
+    background-color: var(--color2);
+    color: white;
+    width: 100%; /* Puedes ajustarlo según tu necesidad */
+    transition: background-color 0.3s, border 0.3s;
+}
+
+.status-select:hover {
+    border-color: var(--color4);
+}
+
+/* Estilos para el botón de eliminar */
+.delete-btn {
+    background-color: var(--red);
+    border: none;
+    color: white;
+    font-size: 1.2em;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-radius: 10%;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.delete-btn:hover {
+    background-color: var(--red-hover);
+    transform: scale(1.1);
+}
+
+.delete-btn:focus {
+    outline: none;
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 768px) {
+    .favoritos {
+        gap: 12px;
+    }
+
+    .favorito {
+        padding: 10px;
+    }
+
+    .favorito img {
+        height: 100px;
+    }
+
+    .favorito h2 {
+        font-size: 0.9em;
+    }
+
+    .favorito p {
+        font-size: 0.75em;
+    }
+
+    .favorito span {
+        font-size: 0.7em;
+    }
+    
+    .status-container {
+        flex-direction: flex; /* Cambia la dirección a columna en pantallas pequeñas */
+        gap: 15px; /* Aumenta el espacio entre los elementos */
+    }
+    
+    .status-select {
+        width: 100%; /* El select se adapta a pantallas más pequeñas */
+    }
+
+}

@@ -1,0 +1,114 @@
+
+/* CSS General */
+:root {
+    --color1: #2f364c;
+    --color2: #514a6b;
+    --color3: #8a6888;
+    --color4: #d092b4;
+    --color5: #e5bad4;
+
+    /* Colores adicionales */
+    --red: #b85464; /* Rojo apagado */
+    --red-hover: #a24353; /* Rojo para hover */
+
+    --green: #6a946c; /* Verde apagado */
+    --green-hover: #58805a; /* Verde para hover */
+
+    --yellow: #c9b175; /* Amarillo apagado */
+    --yellow-hover: #b29f65; /* Amarillo para hover */
+
+    --orange: #d08d64; /* Anaranjado apagado */
+    --orange-hover: #b8794d; /* Anaranjado para hover */
+}
+
+
+html {
+    font-size: 14px;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--color2);
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: var(--color1);
+}
+
+/* Profile */
+.profile-container {
+    background-color: var(--color2);
+    color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    margin: 20px auto;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  label {
+    font-size: 1.1em;
+    margin-bottom: 5px;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid var(--color3);
+    background-color: var(--color2);
+    color: white;
+  }
+  
+  input:disabled, select:disabled {
+    background-color: var(--color3);
+  }
+  
+  .error-message {
+    color: var(--color4);
+    font-size: 1.1rem;
+    text-align: center; /* Centra el mensaje */
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.password-container {
+    position: relative;
+  }
+  
+  .password-container button {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+  
+
+.icon {
+    color: var(--color5);
+    font-size: 1.5rem;
+    transition: color 0.3s;
+    transform: translateY(-45%);
+}
+
+.icon:hover {
+    color: var(--color4);
+}
+  

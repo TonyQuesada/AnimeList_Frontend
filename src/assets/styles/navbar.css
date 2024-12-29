@@ -1,0 +1,235 @@
+
+/* CSS General */
+:root {
+    --color1: #2f364c;
+    --color2: #514a6b;
+    --color3: #8a6888;
+    --color4: #d092b4;
+    --color5: #e5bad4;
+
+    /* Colores adicionales */
+    --red: #b85464; /* Rojo apagado */
+    --red-hover: #a24353; /* Rojo para hover */
+
+    --green: #6a946c; /* Verde apagado */
+    --green-hover: #58805a; /* Verde para hover */
+
+    --yellow: #c9b175; /* Amarillo apagado */
+    --yellow-hover: #b29f65; /* Amarillo para hover */
+
+    --orange: #d08d64; /* Anaranjado apagado */
+    --orange-hover: #b8794d; /* Anaranjado para hover */
+}
+
+html {
+    font-size: 14px;
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem var(--color2);
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    margin-bottom: 60px;
+    background-color: var(--color1);
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--color2); /* Fondo del navbar */
+    padding: 0.5rem 2rem;
+    margin-bottom: 1rem;
+    color: white;
+    font-family: Arial, sans-serif;
+    position: relative;
+}
+
+.navbar-center {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.navbar-link {
+    text-decoration: none;
+    color: var(--color5); /* Color de los enlaces */
+    font-size: 1rem;
+    transition: color 0.3s;
+}
+
+.navbar-link:hover {
+    color: var(--color4); /* Hover para los enlaces */
+}
+
+.user-menu {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.navbar-left {
+    display: flex;
+    align-items: center; /* Alinea verticalmente todos los elementos */
+    gap: 0.5rem; /* Espaciado entre el logo y el texto */
+}
+
+.navbar-logo-link {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.navbar-logo {
+    height: 40px;
+}
+
+.navbar-title-link {
+    text-decoration: none; /* Quita el subrayado del enlace */
+}
+
+.navbar-title {
+    margin-left: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color5); /* Color del texto del título */
+}
+
+.user-name {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--color5); /* Nombre del usuario */
+    text-decoration: none; /* Quita el subrayado del enlace */
+}
+
+.user-name:hover {
+    color: var(--color4); /* Hover para las opciones del menú */
+}
+
+.user-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%; /* Asegura que el menú aparezca justo debajo del nombre */
+    background-color: var(--color1); /* Fondo del menú desplegable */
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: none;
+    flex-direction: column;
+    z-index: 10; /* Evita que otros elementos lo oculten */
+}
+
+.user-menu:hover .user-dropdown {
+    display: flex;
+}
+
+.dropdown-item {
+    padding: 0.5rem 1rem;
+    text-decoration: none;
+    color: var(--color5); /* Color de las opciones del menú */
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.dropdown-item:hover {
+    color: var(--color4); /* Hover para las opciones del menú */
+}
+
+.menu-toggle {
+    display: none;
+    font-size: 1.5rem;
+    color: var(--color5);
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.navbar-responsive-icons {
+    display: none; /* Oculto en vistas normales */
+    justify-content: space-around;
+    background-color: var(--color2);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    padding: 0.5rem 0;
+    z-index: 10;
+}
+
+.navbar-responsive-icons .responsive-icon {
+    color: var(--color5);
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar-responsive-icons .responsive-icon:hover {
+    color: var(--color4);
+}
+
+.logout {
+    color: var(--color5);
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+}
+
+.logout:hover {
+    color: var(--color4);
+}
+
+
+/* Responsividad */
+@media (max-width: 768px) {
+
+    .navbar-title {
+        display: none;
+    }
+
+    .navbar-center {
+        display: none;
+    }
+
+    .navbar-center.open {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .navbar-center.open {
+        display: flex;
+    }
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .navbar-right {
+        display: none;
+    }
+
+    .navbar-left {
+        display: none;
+    }
+
+    .navbar-responsive-icons {
+        display: flex;        
+        position: relative;
+    }
+
+    .navbar-logo {
+        height: 21px;
+    }
+
+    .user-name {
+        display: none; /* Oculta el nombre del usuario */
+    }
+}
