@@ -21,6 +21,7 @@ function App() {
       <BrowserRouter>
         <Navbar />
         <Routes>
+          <Route path="/" element={<Navigate to="/Login" />} />
           <Route path="/Login" element={ <Login /> } />
           <Route path="/Register" element={ <Register /> } />
           <Route path="/Favorites" element={ <ProtectedRoute> <Favorites /> </ProtectedRoute> } />          
