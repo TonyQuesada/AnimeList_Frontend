@@ -23,7 +23,7 @@ const Navbar = () => {
                     <img src="/favicon.png" alt="Logo" className="navbar-logo" />
                 </Link>
                 <Link to="/Explorer" className="navbar-title-link">
-                    <span className="navbar-title">Anime List</span>
+                    <span className="navbar-title">Anime Library</span>
                 </Link>
             </div>
 
