@@ -11,7 +11,6 @@ import { BiShowAlt } from "react-icons/bi";
 const Profile = () => {
 
   const { user } = useContext(UserContext); 
-
   const API = process.env.REACT_APP_BACKEND_URL;
 
   const [userData, setUserData] = useState(null);
@@ -33,6 +32,9 @@ const Profile = () => {
   const [passwordError, setPasswordError] = useState('');
 
   useEffect(() => {
+    // Mostrar toast al iniciar la carga de datos
+    toast.success('Cargando datos del usuario...', { autoClose: 1000 });
+
     // Cargar los datos del usuario al componente
     axios.get(`${API}/users/${user.user_id}`)
       .then(response => {
@@ -106,7 +108,7 @@ const Profile = () => {
     }
   };
 
-  if (!userData) return <div>Cargando...</div>;
+  if (!userData) return null;
 
   return (
     <div className="profile-container">
