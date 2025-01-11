@@ -15,7 +15,7 @@ const ProtectedRoute = ({ children }) => {
 };
 
 function App() {
-
+  
   const { user } = useContext(UserContext);
 
   return (
@@ -25,7 +25,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/" element={<Navigate to="/Login" />} />
-          <Route path="/Login" element={user ? <Navigate to="/Explorer" /> : <Login />} />
+          <Route path="/Login" element={ <Login /> } />
           <Route path="/Register" element={ <Register /> } />
           <Route path="/Favorites" element={ <ProtectedRoute> <Favorites /> </ProtectedRoute> } />          
           <Route path="/Explorer" element={ <ProtectedRoute> <Explorer /> </ProtectedRoute> } />
