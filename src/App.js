@@ -7,7 +7,7 @@ import Explorer from "./pages/Explorer";
 import Profile from "./pages/Profile";
 import Navbar from "./pages/Navbar";
 import { ToastContainer } from 'react-toastify';
-import { UserProvider, UserContext } from "./context/UserContext";
+import { UserContext } from "./context/UserContext";
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useContext(UserContext);
@@ -16,21 +16,23 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   
+  const { user } = useContext(UserContext);
+
   return (
-    <UserProvider>
+    <>
       <ToastContainer />
       <BrowserRouter>
         <Navbar />
         <Routes>
           <Route path="/" element={<Navigate to="/Login" />} />
-          <Route path="/Login" element={ <Login /> } />
+          <Route path="/Login" element={user ? <Navigate to="/Explorer" /> : <Login />} />
           <Route path="/Register" element={ <Register /> } />
           <Route path="/Favorites" element={ <ProtectedRoute> <Favorites /> </ProtectedRoute> } />          
           <Route path="/Explorer" element={ <ProtectedRoute> <Explorer /> </ProtectedRoute> } />
           <Route path="/Profile" element={ <ProtectedRoute> <Profile /> </ProtectedRoute> } />
         </Routes>
       </BrowserRouter>
-    </UserProvider>
+    </>
   );
 }
 
