@@ -326,8 +326,8 @@ body {
     .toast-custom {
         font-size: 0.8rem;
         width: 95%; /* Asegúrate de que no ocupe mucho espacio */
-        padding: 4px 10px; /* Aún más compacto en móviles */
-        margin: 3px; /* Reduce el espacio entre alertas */
+        padding: 4px 10px ; /* Aún más compacto en móviles */
+        margin: 3px 0 5px; /* Reduce el espacio entre alertas */
     }
 
 }

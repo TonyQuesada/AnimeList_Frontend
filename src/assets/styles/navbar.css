@@ -6,6 +6,8 @@
     --color3: #8a6888;
     --color4: #d092b4;
     --color5: #e5bad4;
+    --color6: #f7e6f0;
+    --color7: #f9f9f9;
 
     /* Colores adicionales */
     --red: #b85464; /* Rojo apagado */
@@ -61,13 +63,13 @@ body {
 
 .navbar-link {
     text-decoration: none;
-    color: var(--color5); /* Color de los enlaces */
+    color: var(--color6); /* Color de los enlaces */
     font-size: 1rem;
     transition: color 0.3s;
 }
 
 .navbar-link:hover {
-    color: var(--color4); /* Hover para los enlaces */
+    color: var(--color5); /* Hover para los enlaces */
 }
 
 .user-menu {
@@ -106,12 +108,12 @@ body {
 .user-name {
     font-size: 1rem;
     font-weight: bold;
-    color: var(--color5); /* Nombre del usuario */
+    color: var(--color6); /* Nombre del usuario */
     text-decoration: none; /* Quita el subrayado del enlace */
 }
 
 .user-name:hover {
-    color: var(--color4); /* Hover para las opciones del menú */
+    color: var(--color5); /* Hover para las opciones del menú */
 }
 
 .user-dropdown {
