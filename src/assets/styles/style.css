@@ -6,6 +6,8 @@
     --color3: #8a6888;
     --color4: #d092b4;
     --color5: #e5bad4;
+    --color6: #f7e6f0;
+    --color7: #f9f9f9;
 
     /* Colores adicionales */
     --red: #b85464; /* Rojo apagado */
@@ -115,7 +117,7 @@ body {
 .favorito h2 {
     font-size: 1em;
     margin: 8px 0;
-    color: var(--color5);
+    color: var(--color6);
         
     line-height: 1.2;
     height: calc(1.2em * 2);
@@ -129,7 +131,7 @@ body {
 
 .favorito p {
     font-size: 0.85em;
-    color: var(--color4);
+    color: var(--color5);
     line-height: 1.2;
     max-height: calc(1.2em * 2);
     overflow: hidden;
