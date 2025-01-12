@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify'; // Importar Toastify
+import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
 import { FaTrashAlt } from 'react-icons/fa';
 import '../assets/styles/style.css';
@@ -133,7 +135,7 @@ const Explorer = () => {
 
             // Extraer los detalles necesarios
             const anime = animeDetails.data;
-
+            
             await axios.put(`${API}/Favorites/AddOrUpdate`, {
                 api_id: anime.mal_id,
                 title: anime.title || "Título no disponible",
@@ -145,7 +147,9 @@ const Explorer = () => {
             }).catch(err => {
                 console.error("Error en la solicitud axios:", err.response || err.message);
             });
-    
+
+            const existingFavorite = favorites.find(fav => fav.api_id === anime_id);
+            var isNewFavorite = !existingFavorite;
             // Actualizar la lista de favoritos localmente
             setFavorites(prev => {
                 const favoriteExists = prev.find(fav => fav.api_id === anime_id);
@@ -160,6 +164,13 @@ const Explorer = () => {
                     ];
                 }
             });
+
+            // Mostrar la alerta solo después de la actualización exitosa
+            if (isNewFavorite) {
+                toast.success(`El anime "${anime.title}" fue agregado a favoritos`);
+            } else {
+                toast.success(`El estado de "${anime.title}" fue actualizado`);
+            }
 
         } catch (err) {
             console.error('Error al cambiar el estado del favorito:', err.message);
@@ -176,6 +187,37 @@ const Explorer = () => {
         } catch (err) {
             console.log(err);
         }
+    };
+    
+    const confirmDeleteFavorite = (anime_id) => {
+        toast(
+            <div>
+                <p>¿Estás seguro de eliminar este favorito?</p>
+                <button
+                    className="toast-confirm-btn"
+                    onClick={() => {
+                        handleDeleteFavorite(anime_id);
+                        toast.dismiss(); // Cierra el toast manualmente
+                    }}
+                >
+                    Sí
+                </button>
+                <button
+                    className="toast-cancel-btn"
+                    onClick={() => toast.dismiss()} // Cierra el toast si se cancela
+                >
+                    No
+                </button>
+            </div>,
+            {
+                position: "top-center",
+                autoClose: false, // Mantén el toast abierto hasta que se confirme o cancele
+                closeOnClick: false,
+                draggable: false,
+                closeButton: false,
+                className: "toast-confirmation", // Clase CSS personalizada (opcional)
+            }
+        );
     };
 
     const getPageNumbers = () => {
@@ -242,10 +284,10 @@ const Explorer = () => {
                                 </select>
 
                                 {/* Botón de eliminar */}
-                                {favorite && (
+                                {favorite && (                                    
                                     <button
                                         className="delete-btn"
-                                        onClick={() => handleDeleteFavorite(anime.mal_id)}
+                                        onClick={() => confirmDeleteFavorite(anime.mal_id)}
                                     >
                                         <FaTrashAlt />
                                     </button>

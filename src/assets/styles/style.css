@@ -19,6 +19,8 @@
 
     --orange: #d08d64; /* Anaranjado apagado */
     --orange-hover: #b8794d; /* Anaranjado para hover */
+
+    --toastify-icon-color-success: var(--color3); /* Toastify icon color */
 }
 
 
@@ -237,6 +239,53 @@ body {
     outline: none;
 }
 
+/* Personalizar el toast */
+.Toastify__progress-bar {
+    background-color: var(--color3) !important;
+}
+
+.Toastify__progress-bar--success{
+    background-color: var(--color2) !important;
+}
+
+.toast-confirmation {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 20px;
+}
+
+.toast-confirm-btn,
+.toast-cancel-btn {
+    padding: 8px 12px;
+    border: none;
+    background-color: var(--color3); /* Usa tu variable CSS */
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0 5px;
+}
+
+.toast-confirm-btn:hover {
+    background-color: var(--color4);
+}
+
+.toast-cancel-btn:hover {
+    background-color: var(--color2);
+}
+
+.toast-custom {
+    font-size: 0.9rem; /* Reduce el tamaño de la fuente */
+    padding: 6px 12px; /* Menos espacio interno */
+    margin: 4px; /* Reduce el margen entre alertas */
+    border-radius: 4px; /* Opcional: bordes más sutiles */
+    min-height: auto; /* Permite alturas dinámicas */
+    width: 105%; /* Ajusta el ancho en móviles */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra discreta */
+}
+
 /* Ajuste para pantallas pequeñas */
 @media (max-width: 768px) {
     .favoritos {
@@ -272,4 +321,17 @@ body {
         width: 100%; /* El select se adapta a pantallas más pequeñas */
     }
 
+    .toast-custom {
+        font-size: 0.8rem;
+        width: 95%; /* Asegúrate de que no ocupe mucho espacio */
+        padding: 4px 10px; /* Aún más compacto en móviles */
+        margin: 3px; /* Reduce el espacio entre alertas */
+    }
+
+}
+
+@media only screen and (max-width: 480px) {
+    .Toastify__toast-container--top-left, .Toastify__toast-container--top-center, .Toastify__toast-container--top-right{
+        padding: 13% !important;
+    }
 }

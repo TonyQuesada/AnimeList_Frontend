@@ -1,10 +1,11 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
+import { toast } from 'react-toastify'; // Importar Toastify
+import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import "../assets/styles/login.css";
 import { BiHide } from "react-icons/bi";
 import { BiShowAlt } from "react-icons/bi";
-
 
 const Login = () => {
 
@@ -18,6 +19,25 @@ const Login = () => {
   
   // Estado para controlar la visibilidad de la contraseña
   const [showPassword, setShowPassword] = useState(false);
+
+  // Array con mensajes de bienvenida aleatorios
+  const welcomeMessages = [
+    `¡Qué bueno verte, ${username}!`,
+    `¡Encantado de tenerte aquí, ${username}!`,
+    `¡Nos alegra que estés de vuelta, ${username}!`,
+    `¡Te has conectado con éxito, ${username}!`,
+    `¡Es genial tenerte con nosotros, ${username}!`,
+    `¡Qué alegría verte, ${username}!`,
+    `¡Hola, ${username}, es un placer verte de nuevo!`,
+    `¡Listo para explorar, ${username}!`,
+    `¡Nos emociona verte conectado, ${username}!`,
+  ];
+  
+  // Función para obtener un mensaje aleatorio
+  const getRandomWelcomeMessage = () => {
+    const randomIndex = Math.floor(Math.random() * welcomeMessages.length);
+    return welcomeMessages[randomIndex];
+  };
 
   const handleSubmit = async (e) => {
       e.preventDefault();
@@ -35,6 +55,7 @@ const Login = () => {
 
           if (response.ok) {
               login(data.user); // Guarda el usuario en el contexto
+              toast.success(getRandomWelcomeMessage()); // Muestra la alerta de bienvenida
               navigate("/Explorer"); // Redirige a la página de favoritos
           } else {
               setError("Credenciales inválidas.");

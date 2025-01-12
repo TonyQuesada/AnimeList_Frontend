@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
+import { toast } from 'react-toastify'; // Importar Toastify
+import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
 import { FaTrashAlt } from 'react-icons/fa';
 import '../assets/styles/style.css';
@@ -80,10 +82,23 @@ const Favorites = () => {
                 status_id: newStatusId,
             });
 
+            // Encuentra el anime en la lista local para obtener su título
+            const updatedAnime = favorites.find(fav => fav.anime_id === anime_id);
+
+            // Si no se encuentra, salimos
+            if (!updatedAnime) {
+                console.error("Anime no encontrado en los favoritos locales");
+                return;
+            }
+
             // Actualiza el estado localmente después de la actualización en la base de datos
             setFavorites(favorites.map(fav =>
                 fav.anime_id === anime_id ? { ...fav, status_id: newStatusId } : fav
             ));
+            
+            // Mostrar mensaje de éxito con el título del anime
+            toast.success(`El estado de "${updatedAnime.title}" fue actualizado`);
+
         } catch (err) {
             console.log(err);
         }
@@ -102,6 +117,37 @@ const Favorites = () => {
             console.log(err);
         }
     };
+
+    const confirmDeleteFavorite = (anime_id) => {
+        toast(
+            <div>
+                <p>¿Estás seguro de eliminar este favorito?</p>
+                <button
+                    className="toast-confirm-btn"
+                    onClick={() => {
+                        handleDeleteFavorite(anime_id);
+                        toast.dismiss(); // Cierra el toast manualmente
+                    }}
+                >
+                    Sí
+                </button>
+                <button
+                    className="toast-cancel-btn"
+                    onClick={() => toast.dismiss()} // Cierra el toast si se cancela
+                >
+                    No
+                </button>
+            </div>,
+            {
+                position: "top-center",
+                autoClose: false, // Mantén el toast abierto hasta que se confirme o cancele
+                closeOnClick: false,
+                draggable: false,
+                closeButton: false,
+                className: "toast-confirmation", // Clase CSS personalizada (opcional)
+            }
+        );
+    };    
 
     // Handle filtering by title
     const handleSearchChange = (e) => {
@@ -199,9 +245,9 @@ const Favorites = () => {
                             {/* Botón de eliminar favorito */}
                             <button
                                 className="delete-btn"
-                                onClick={() => handleDeleteFavorite(favorito.anime_id)}
+                                onClick={() => confirmDeleteFavorite(favorito.anime_id)}
                             >
-                                <FaTrashAlt /> {/* Usamos el ícono aquí */}
+                                <FaTrashAlt />
                             </button>
                         </div>
 

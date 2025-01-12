@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
-import { ToastContainer, toast } from 'react-toastify'; // Importar Toastify
+import { toast } from 'react-toastify'; // Importar Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import '../assets/styles/style.css';
 import '../assets/styles/profile.css';
@@ -31,9 +31,12 @@ const Profile = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
+
   useEffect(() => {
-    // Mostrar toast al iniciar la carga de datos
-    toast.success('Cargando datos del usuario...', { autoClose: 1000 });
+
+    // Limpiar toasts pendientes antes de mostrar uno nuevo
+    toast.dismiss();
+    toast.success('Cargando datos del usuario...');
 
     // Cargar los datos del usuario al componente
     axios.get(`${API}/users/${user.user_id}`)
@@ -69,6 +72,7 @@ const Profile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    toast.dismiss();
 
     // Validación de contraseñas coincidentes
     if (passwordData.password !== passwordData.confirmPassword) {
@@ -196,9 +200,6 @@ const Profile = () => {
 
         <button type="submit" className="btn">Actualizar Perfil</button>
       </form>
-
-      {/* Colocar ToastContainer donde quieras que se muestren las notificaciones */}
-      <ToastContainer />
 
     </div>
   );

@@ -6,6 +6,7 @@ import Favorites from "./pages/Favorites";
 import Explorer from "./pages/Explorer";
 import Profile from "./pages/Profile";
 import Navbar from "./pages/Navbar";
+import useIsMobile from "./hooks/useIsMobile";
 import { ToastContainer } from 'react-toastify';
 import { UserContext } from "./context/UserContext";
 
@@ -17,10 +18,11 @@ const ProtectedRoute = ({ children }) => {
 function App() {
   
   const { user } = useContext(UserContext);
+  const isMobile = useIsMobile();
 
   return (
     <>
-      <ToastContainer />
+      <ToastContainer autoClose={2000} limit={2} closeOnClick pauseOnHover toastClassName="toast-custom" position={isMobile ? "bottom-center" : "bottom-right"} hideProgressBar draggable={false} />
       <BrowserRouter>
         <Navbar />
         <Routes>
