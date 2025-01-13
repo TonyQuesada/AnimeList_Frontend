@@ -94,7 +94,7 @@ body {
 .favorito {
     border: 1px solid var(--color3);
     border-radius: 8px;
-    padding: 12px;
+    padding: 10px;
     text-align: center;
     background-color: var(--color2);
     color: white;
@@ -291,11 +291,11 @@ body {
 /* Ajuste para pantallas pequeñas */
 @media (max-width: 768px) {
     .favoritos {
-        gap: 12px;
+        gap: 12px;   
     }
 
     .favorito {
-        padding: 10px;
+        padding: 8px;
     }
 
     .favorito img {
@@ -332,8 +332,76 @@ body {
 
 }
 
-@media only screen and (max-width: 480px) {
+@media (max-width: 480px) {
     .Toastify__toast-container--top-left, .Toastify__toast-container--top-center, .Toastify__toast-container--top-right{
         padding: 13% !important;
+    }
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 403px) {
+    .favoritos {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    }
+
+    .favorito {
+        padding: 8px;
+    }
+
+    .favorito img {
+        height: 100px;
+    }
+
+    .favorito h2 {
+        font-size: 0.9em;
+    }
+
+    .favorito p {
+        font-size: 0.75em;
+    }
+
+    .favorito span {
+        font-size: 0.7em;
+    }
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 403px) {
+    .favoritos {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 2 o 3 columnas dependiendo del tamaño */
+    }
+}
+
+/* Ajuste para pantallas muy pequeñas (menos de 343px) */
+@media (max-width: 343px) {
+    .favoritos {
+        grid-template-columns: repeat(2, 1fr); /* 2 columnas */
+    }
+
+    .favorito {
+        padding: 6px; /* Ajusta el padding para que las tarjetas no estén tan grandes */
+    }
+
+    .favorito img {
+        height: 80px; /* Ajusta la altura de las imágenes para pantallas muy pequeñas */
+    }
+
+    .favorito h2 {
+        font-size: 0.8em; /* Reduce el tamaño de los títulos */
+    }
+
+    .favorito p {
+        font-size: 0.7em; /* Ajusta el tamaño de la descripción */
+    }
+
+    .favorito span {
+        font-size: 0.6em; /* Ajusta el tamaño de los detalles */
+    }
+}
+
+/* Ajuste para pantallas más pequeñas */
+@media (max-width: 343px) {
+    .favoritos {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); /* Adaptación automática de columnas */
     }
 }
