@@ -54,7 +54,7 @@ const Favorites = () => {
             if (width >= 1583) {
                 setItemsPerPage(16);
             } else if (width <= 1582 && width >= 1388) {
-                setItemsPerPage(21);
+                setItemsPerPage(14);
             } else if (width <= 1387 && width >= 1192) {
                 setItemsPerPage(18);
             } else if (width <= 1191 && width >= 996) {

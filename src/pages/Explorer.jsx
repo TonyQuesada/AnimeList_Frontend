@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
 import { FaTrashAlt } from 'react-icons/fa';
 import '../assets/styles/style.css';
+import Select from 'react-select';
 
 const Explorer = () => {
 
@@ -21,6 +22,8 @@ const Explorer = () => {
     // Estado para `itemsPerPage`
     const [itemsPerPage, setItemsPerPage] = useState(16);    
 
+    const [selectedCategories, setSelectedCategories] = useState([]); // Estado para categorías seleccionadas
+
     useEffect(() => {
         // Función para ajustar `itemsPerPage` según el tamaño de pantalla
         const updateItemsPerPage = () => {
@@ -29,7 +32,7 @@ const Explorer = () => {
             if (width >= 1583) {
                 setItemsPerPage(16);
             } else if (width <= 1582 && width >= 1388) {
-                setItemsPerPage(21);
+                setItemsPerPage(14);
             } else if (width <= 1387 && width >= 1192) {
                 setItemsPerPage(18);
             } else if (width <= 1191 && width >= 996) {
@@ -93,10 +96,10 @@ const Explorer = () => {
         // Limpiar datos anteriores antes de hacer la solicitud
         setAnimeList([]);
 
-        try {
-            const apiUrl = search.length > 0
-                ? `https://api.jikan.moe/v4/anime?page=${page}&limit=${itemsPerPage}&q=${search}`
-                : `https://api.jikan.moe/v4/anime?page=${page}&limit=${itemsPerPage}`;
+        try { 
+            const apiUrl = search.length > 0 || selectedCategories.length > 0
+                ? `https://api.jikan.moe/v4/anime?page=${page}&limit=${itemsPerPage}&order_by=start_date&sort=desc&min_episodes=1&q=${search}&genres=${selectedCategories.join(',')}`
+                : `https://api.jikan.moe/v4/anime?page=${page}&limit=${itemsPerPage}&order_by=start_date&sort=desc&min_episodes=1&status=airing&sfw&genres=${selectedCategories.join(',')}`;
 
             const res = await axios.get(apiUrl);
             setAnimeList(res.data.data);  // Almacena los animes en el estado
@@ -113,6 +116,11 @@ const Explorer = () => {
     const handleSearchClick = () => {
         setCurrentPage(1);
         fetchAnime(1);
+    };
+
+    const handleCategoryChange = (selectedOptions) => {
+        const value = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        setSelectedCategories(value);
     };
 
     const handlePageChange = (page) => {
@@ -250,6 +258,59 @@ const Explorer = () => {
                     onChange={handleSearchChange}
                     className="search-input"
                 />
+
+                 {/* Select para categorías múltiples */}
+                {/* <Select
+                    isMulti
+                    options={[
+                        { value: "1", label: "Acción" },
+                        { value: "2", label: "Aventura" },
+                        { value: "3", label: "Autos" },
+                        { value: "4", label: "Comedia" },
+                        { value: "23", label: "Colegial" },
+                        { value: "36", label: "Cosas de la Vida" },
+                        { value: "5", label: "Dementia" },
+                        { value: "6", label: "Demonios" },
+                        { value: "30", label: "Deportes" },
+                        { value: "8", label: "Drama" },
+                        { value: "9", label: "Ecchi" },
+                        { value: "10", label: "Fantasía" },
+                        { value: "35", label: "Harem" },
+                        { value: "12", label: "Hentai" },
+                        { value: "13", label: "Histórico" },
+                        { value: "36", label: "Isekai" },
+                        { value: "43", label: "Josei" },
+                        { value: "11", label: "Juegos" },
+                        { value: "16", label: "Magia" },
+                        { value: "18", label: "Mecha" },
+                        { value: "38", label: "Militar" },
+                        { value: "7", label: "Misterio" },
+                        { value: "19", label: "Música" },
+                        { value: "15", label: "Niños" },
+                        { value: "20", label: "Parodia" },
+                        { value: "39", label: "Policial" },
+                        { value: "40", label: "Psicológico" },
+                        { value: "22", label: "Romance" },
+                        { value: "21", label: "Samurái" },
+                        { value: "24", label: "Ciencia Ficción" },
+                        { value: "42", label: "Seinen" },
+                        { value: "25", label: "Shoujo" },
+                        { value: "26", label: "Shoujo Ai" },
+                        { value: "27", label: "Shounen" },
+                        { value: "28", label: "Shounen Ai" },
+                        { value: "37", label: "Sobrenatural" },
+                        { value: "29", label: "Espacial" },
+                        { value: "31", label: "Superpoderes" },
+                        { value: "14", label: "Terror" },
+                        { value: "41", label: "Thriller" },
+                        { value: "32", label: "Vampiros" },
+                        { value: "33", label: "Yaoi" },
+                        { value: "34", label: "Yuri" },
+                    ]}
+                    value={selectedCategories.map(value => ({ value, label: value }))}
+                    onChange={handleCategoryChange}
+                /> */}
+
                 <button onClick={handleSearchClick} className="search-button">Buscar</button>
             </div>
 
