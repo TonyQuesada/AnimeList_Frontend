@@ -241,6 +241,14 @@ body {
     outline: none;
 }
 
+.logo {    
+    max-width: 150px;
+    margin-bottom: 0.5rem;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Personalizar el toast */
 .Toastify__progress-bar {
     background-color: var(--color3) !important;
@@ -330,6 +338,9 @@ body {
         margin: 3px 0 5px; /* Reduce el espacio entre alertas */
     }
 
+    .logo {
+        max-width: 100px;
+    }
 }
 
 @media (max-width: 480px) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useRef  } from 'react';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 import { toast } from 'react-toastify'; // Importar Toastify
@@ -7,6 +7,9 @@ import '../assets/styles/style.css';
 import '../assets/styles/profile.css';
 import { BiHide } from "react-icons/bi";
 import { BiShowAlt } from "react-icons/bi";
+import { FaPencilAlt } from "react-icons/fa";
+import ReactCrop from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css'; 
 
 const Profile = () => {
 
@@ -31,6 +34,7 @@ const Profile = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
 
@@ -111,12 +115,57 @@ const Profile = () => {
       console.error(err);
     }
   };
+  
+  const handleImageChange = async (event) => {
+    const file = event.target.files[0]; // Obtiene el archivo del evento
+    if (!file) return; // Si no hay archivo, no hacer nada
+
+    const username = user.username; // Obtén el username desde userData
+    if (!username) {
+        console.error("El username no está definido.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("profileImage", file);
+
+    try {
+      const response = await axios.post(
+        `${API}/uploadProfileImage?username=${username}`,  // El username se pasa como parámetro en la URL
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+          }
+      );
+          
+      // Imprimir para depuración
+      console.log("Respuesta del servidor:", response.data);
+
+      // Aquí se actualiza el estado para reflejar la nueva foto de perfil
+      const updatedUserData = { ...userData, profile_image: response.data.imageUrl };
+      console.log("Datos actualizados:", updatedUserData);
+      setUserData(updatedUserData); // Actualiza el estado local para que se renderice la nueva imagen
+
+    } catch (error) {
+      console.error("Error al subir la imagen:", error.response?.data || error.message);
+    }
+  };
+
 
   if (!userData) return null;
 
   return (
     <div className="profile-container">
-      <h1>Perfil de {userData.fullname}</h1>
+
+      <div className="image-container">
+        <img src={image || (userData.profile_image ? `${API}${userData.profile_image}?${new Date().getTime()}` : 'default-image.jpg')} alt="Foto de perfil" className="profile-image" />
+        {/* Ícono de lápiz en la parte inferior derecha */}
+        <label htmlFor="file-upload" className="edit-icon">
+          <FaPencilAlt />
+        </label>
+        <input type="file" id="file-upload" accept="image/*" style={{ display: 'none' }} onChange={handleImageChange} />
+      </div>
+
       <br />
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -126,7 +175,6 @@ const Profile = () => {
             name="fullname"
             value={formData.fullname}
             onChange={handleChange}
-            disabled
           />
         </div>
 
@@ -137,6 +185,7 @@ const Profile = () => {
             name="username"
             value={formData.username}
             onChange={handleChange}
+            disabled
           />
         </div>
 
@@ -186,14 +235,6 @@ const Profile = () => {
             </button>
           </div>
         </div>        
-
-        <div className="form-group">
-          <label>Estado</label>
-          <select value={status} disabled>
-            <option value="1">Activo</option>
-            <option value="2">Inactivo</option>
-          </select>
-        </div>
 
         {passwordError && <div className="error-message">{passwordError}</div>}
         {error && <div className="error-message">{error}</div>}
