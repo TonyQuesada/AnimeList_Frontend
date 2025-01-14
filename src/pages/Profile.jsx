@@ -158,7 +158,8 @@ const Profile = () => {
     <div className="profile-container">
 
       <div className="image-container">
-        <img src={image || (userData.profile_image ? `${API}${userData.profile_image}?${new Date().getTime()}` : 'default-image.jpg')} alt="Foto de perfil" className="profile-image" />
+        {!image && !userData.profile_image && <span>Cargando...</span>}
+        <img src={image || (userData.profile_image ? `${userData.profile_image}?${new Date().getTime()}` : 'default-image.jpg')} alt="Foto de perfil" className="profile-image" onError={(e) => (e.target.src = 'default-image.jpg')} />
         {/* Ícono de lápiz en la parte inferior derecha */}
         <label htmlFor="file-upload" className="edit-icon">
           <FaPencilAlt />
