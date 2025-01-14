@@ -15,6 +15,7 @@ const Explorer = () => {
     const [animeList, setAnimeList] = useState([]);  // Lista de animes obtenidos
     const [favorites, setFavorites] = useState([]);
     const [statuses, setStatuses] = useState([]);
+    const [genres, setGenres] = useState([]);  // Estado para los géneros
     const [search, setSearch] = useState('');  // Campo de búsqueda
     const [currentPage, setCurrentPage] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(false);  // Indica si hay más páginas
@@ -38,7 +39,7 @@ const Explorer = () => {
             } else if (width <= 1191 && width >= 996) {
                 setItemsPerPage(15);
             } else if (width <= 995 && width >= 800) {
-                setItemsPerPage(16);
+                setItemsPerPage(8);
             } else if (width <= 799 && width >= 596) {
                 setItemsPerPage(12);
             } else if (width <= 595) {
@@ -59,7 +60,7 @@ const Explorer = () => {
     useEffect(() => {
         // Actualiza la lista de animes cada vez que `itemsPerPage` cambie
         setCurrentPage(1); // Resetea a la primera página
-        fetchAnime(1); // Vuelve a hacer la llamada al API con los nuevos límites
+        fetchAnime(1, selectedCategories); // Vuelve a hacer la llamada al API con los nuevos límites
     }, [itemsPerPage]);
     
     useEffect(() => {
@@ -85,25 +86,74 @@ const Explorer = () => {
             }
         };
 
+        const fetchGenres = async () => {
+            try {
+                const res = await axios.get(`${API}/GenresAnime`);
+                setGenres(res.data);  // Almacena los géneros obtenidos
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
         fetchStatuses();
         fetchFavorites();
-        fetchAnime();
+        fetchGenres();
         
     }, [user, logout]);
 
-    const fetchAnime = async (page = 1) => {
+    const fetchAnime = async (page = 1, selectedCategories = []) => {
         
         // Limpiar datos anteriores antes de hacer la solicitud
         setAnimeList([]);
 
         try { 
-            const apiUrl = search.length > 0 || selectedCategories.length > 0
-                ? `https://api.jikan.moe/v4/anime?page=${page}&limit=${itemsPerPage}&order_by=start_date&sort=desc&min_episodes=1&q=${search}&genres=${selectedCategories.join(',')}`
-                : `https://api.jikan.moe/v4/anime?page=${page}&limit=${itemsPerPage}&order_by=start_date&sort=desc&min_episodes=1&status=airing&sfw&genres=${selectedCategories.join(',')}`;
+            // Construir la URL de la API correctamente
+            const baseUrl = 'https://api.jikan.moe/v4/anime';
 
-            const res = await axios.get(apiUrl);
-            setAnimeList(res.data.data);  // Almacena los animes en el estado
-            setHasNextPage(res.data.pagination.has_next_page);  // Actualiza si hay más páginas
+            const queryParams = new URLSearchParams({
+                page: page,
+                limit: 25,
+                order_by: 'start_date',
+                sort: 'desc',
+                min_episodes: 1,
+            });
+
+            if (search.length > 0) {
+                queryParams.append('q', search);
+            }
+
+            if (selectedCategories.length > 0) {
+                queryParams.append('genres', selectedCategories.join(','));
+            }
+            
+            // Si no hay búsqueda ni categorías seleccionadas, agregar los parámetros por defecto
+            if (search.length === 0 && selectedCategories.length === 0) {
+                queryParams.append('status', 'airing');  // Agregar status por defecto
+                queryParams.append('sfw', true);          // Agregar sfw por defecto
+            }
+
+            // Realizar la solicitud con la URL construida
+            const res = await axios.get(`${baseUrl}?${queryParams.toString()}`);
+
+            // Verificar si 'data' existe en la respuesta
+            if (res.data && res.data.data) {
+                // Filtrar duplicados basado en mal_id
+                const uniqueAnimes = res.data.data.filter((anime, index, self) =>
+                    index === self.findIndex((a) => (
+                        a.mal_id === anime.mal_id // Filtra por mal_id para evitar duplicados
+                    ))
+                );
+
+                // Limitar la cantidad de animes a `itemsPerPage` después de filtrar duplicados
+                const paginatedAnimes = uniqueAnimes.slice(0, itemsPerPage);
+
+                // Actualizamos la lista de animes
+                setAnimeList(paginatedAnimes);
+                setHasNextPage(res.data.pagination.has_next_page); // Actualiza si hay más páginas
+            } else {
+                console.error("Error: La respuesta no contiene 'data'.");
+            }
+
         } catch (err) {
             console.log(err);
         }
@@ -115,17 +165,20 @@ const Explorer = () => {
 
     const handleSearchClick = () => {
         setCurrentPage(1);
-        fetchAnime(1);
+        fetchAnime(1, selectedCategories);
     };
 
     const handleCategoryChange = (selectedOptions) => {
-        const value = selectedOptions ? selectedOptions.map(option => option.value) : [];
-        setSelectedCategories(value);
+        // Mapea las opciones seleccionadas y ajusta el estado
+        const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
+        setSelectedCategories(selectedValues);
+        setCurrentPage(1);  // Resetea a la primera página cuando se cambian los géneros
+        fetchAnime(1, selectedValues);  // Pasa selectedValues directamente a fetchAnime
     };
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
-        fetchAnime(page);
+        fetchAnime(page, selectedCategories);
     };
 
     const handleStatusChangeFavorite = async (anime_id, newStatusId) => {
@@ -247,7 +300,7 @@ const Explorer = () => {
 
         return pages;
     };
-
+    
     return (
         <div>
             <div className="filters">
@@ -259,59 +312,69 @@ const Explorer = () => {
                     className="search-input"
                 />
 
+                <button onClick={handleSearchClick} className="search-button">Buscar</button>
+
                  {/* Select para categorías múltiples */}
                 <Select
                     isMulti
-                    options={[
-                        { value: "1", label: "Acción" },
-                        { value: "2", label: "Aventura" },
-                        { value: "3", label: "Autos" },
-                        { value: "4", label: "Comedia" },
-                        { value: "23", label: "Colegial" },
-                        { value: "36", label: "Cosas de la Vida" },
-                        { value: "5", label: "Dementia" },
-                        { value: "6", label: "Demonios" },
-                        { value: "30", label: "Deportes" },
-                        { value: "8", label: "Drama" },
-                        { value: "9", label: "Ecchi" },
-                        { value: "10", label: "Fantasía" },
-                        { value: "35", label: "Harem" },
-                        { value: "12", label: "Hentai" },
-                        { value: "13", label: "Histórico" },
-                        { value: "36", label: "Isekai" },
-                        { value: "43", label: "Josei" },
-                        { value: "11", label: "Juegos" },
-                        { value: "16", label: "Magia" },
-                        { value: "18", label: "Mecha" },
-                        { value: "38", label: "Militar" },
-                        { value: "7", label: "Misterio" },
-                        { value: "19", label: "Música" },
-                        { value: "15", label: "Niños" },
-                        { value: "20", label: "Parodia" },
-                        { value: "39", label: "Policial" },
-                        { value: "40", label: "Psicológico" },
-                        { value: "22", label: "Romance" },
-                        { value: "21", label: "Samurái" },
-                        { value: "24", label: "Ciencia Ficción" },
-                        { value: "42", label: "Seinen" },
-                        { value: "25", label: "Shoujo" },
-                        { value: "26", label: "Shoujo Ai" },
-                        { value: "27", label: "Shounen" },
-                        { value: "28", label: "Shounen Ai" },
-                        { value: "37", label: "Sobrenatural" },
-                        { value: "29", label: "Espacial" },
-                        { value: "31", label: "Superpoderes" },
-                        { value: "14", label: "Terror" },
-                        { value: "41", label: "Thriller" },
-                        { value: "32", label: "Vampiros" },
-                        { value: "33", label: "Yaoi" },
-                        { value: "34", label: "Yuri" },
-                    ]}
-                    value={selectedCategories.map(value => ({ value, label: value }))}
+                    placeholder="Genero"
+                    className="category-select"
+                    options={genres.map(genre => ({
+                        value: genre.id, 
+                        label: genre.name  // Asegúrate de que el formato coincida
+                    }))}
+                    value={selectedCategories.map(id => {
+                        const genre = genres.find(g => g.id === id);
+                        return genre ? { value: genre.id, label: genre.name } : null;
+                    }).filter(Boolean)}  // Filtra valores nulos si no se encuentran géneros
                     onChange={handleCategoryChange}
+                    styles={{
+                        control: (provided, state) => ({
+                            ...provided,
+                            backgroundColor: '#514a6b',  // Fondo del control
+                            borderColor: state.isFocused ? '#d092b4' : '#8a6888', // Cambiar el borde cuando está abierto
+                            borderRadius: '4px',
+                            boxShadow: state.isFocused ? '0 0 5px #d092b4' : '', // Agregar sombra cuando está enfocado
+                            '&:hover': {
+                                borderColor: state.isFocused ? '#d092b4' : '#8a6888', // Borde en hover
+                                boxShadow: state.isFocused ? '0 0 5px #d092b4' : '', // Sombra en hover
+                            },
+                        }),
+                        menu: (provided) => ({
+                            ...provided,
+                            backgroundColor: '#514a6b',  // Fondo del menú desplegable
+                        }),
+                        option: (provided, state) => ({
+                            ...provided,
+                            backgroundColor: state.isSelected
+                                ? '#e5bad4'  // Color de fondo cuando está seleccionado
+                                : state.isFocused
+                                ? '#d092b4'  // Fondo cuando se pasa el mouse
+                                : '#514a6b',  // Fondo por defecto
+                            color: '#fff',  // Color de texto
+                        }),
+                        multiValue: (provided) => ({
+                            ...provided,
+                            backgroundColor: '#d092b4',  // Fondo de las opciones seleccionadas
+                        }),
+                        multiValueLabel: (provided) => ({
+                            ...provided,
+                            color: '#fff',  // Color del texto dentro de las opciones seleccionadas
+                        }),
+                        multiValueRemove: (provided) => ({
+                            ...provided,
+                            backgroundColor: '#8a6888',  // Fondo del ícono de eliminar
+                            color: '#fff',
+                            ':hover': {
+                                backgroundColor: '#d092b4',  // Cambio de fondo al pasar el mouse
+                            },
+                        }),
+                        input: (provided) => ({
+                            ...provided,
+                            color: '#fff',  // Establecer el color del texto a blanco
+                        }),
+                    }}
                 />
-
-                <button onClick={handleSearchClick} className="search-button">Buscar</button>
             </div>
 
             <div className="favoritos">

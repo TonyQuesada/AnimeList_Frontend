@@ -296,6 +296,15 @@ body {
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Sombra discreta */
 }
 
+
+/* Estilos base para el select con la clase específica */
+.category-select {
+    width: 25%; /* Asegura que se ajuste al contenedor */    
+    margin: 0 10px;
+}
+
+
+
 /* Ajuste para pantallas pequeñas */
 @media (max-width: 768px) {
     .favoritos {
@@ -335,7 +344,7 @@ body {
         font-size: 0.8rem;
         width: 95%; /* Asegúrate de que no ocupe mucho espacio */
         padding: 4px 10px ; /* Aún más compacto en móviles */
-        margin: 3px 0 5px; /* Reduce el espacio entre alertas */
+        margin-top: -5px !important;
     }
 
     .logo {

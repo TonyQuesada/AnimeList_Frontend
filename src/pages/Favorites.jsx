@@ -17,6 +17,7 @@ const Favorites = () => {
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(16);
+    const [sortOrder, setSortOrder] = useState(''); // Nuevo estado para ordenación
 
     useEffect(() => {
 
@@ -60,7 +61,7 @@ const Favorites = () => {
             } else if (width <= 1191 && width >= 996) {
                 setItemsPerPage(15);
             } else if (width <= 995 && width >= 800) {
-                setItemsPerPage(16);
+                setItemsPerPage(8);
             } else if (width <= 799 && width >= 596) {
                 setItemsPerPage(12);
             } else if (width <= 595) {
@@ -166,9 +167,35 @@ const Favorites = () => {
         return matchesTitle && matchesStatus;
     });
 
+
+    // Manejar cambio en el select de ordenación
+    const handleSortChange = (e) => {
+        setSortOrder(e.target.value);
+    };
+
+    // Filtrar y ordenar favoritos
+    const filteredAndSortedData = filteredData.sort((a, b) => {
+        if (sortOrder === 'name') {
+            return a.title.localeCompare(b.title); // Ordenar por nombre (alfabéticamente)
+        } else if (sortOrder === 'dateAdded') {
+            // Ordenar primero por fecha
+            const dateComparison = new Date(b.date_added) - new Date(a.date_added);
+            
+            // Si las fechas son iguales, ordenar por nombre
+            if (dateComparison === 0) {
+                return a.title.localeCompare(b.title); // Si las fechas son iguales, ordenar alfabéticamente por nombre
+            }
+            
+            return dateComparison; // Si no, devolver el resultado de la comparación de fecha
+        } else {
+            return 0; // Sin orden específico
+        }
+    });
+    
+    
     // Paginate filtered data
     const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentItems = filteredData.slice(startIndex, startIndex + itemsPerPage);
+    const currentItems = filteredAndSortedData.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
     // Crea la lógica para los números de las páginas
@@ -219,6 +246,13 @@ const Favorites = () => {
                     ))}
                 </select>
 
+                {/* Nuevo select de ordenación */}
+                <select onChange={handleSortChange} value={sortOrder} className="sort-select">
+                    <option value="" hidden>Ordenar por</option>
+                    <option value="name">Nombre</option>
+                    <option value="dateAdded">Fecha de agregado</option>
+                </select>
+
             </div>
 
             <div className="favoritos">
@@ -229,6 +263,7 @@ const Favorites = () => {
                         <p>{favorito.description}</p>
                         
                         <div className="status-container">
+
                             {/* Select para cambiar el estado */}
                             <select
                                 className="status-select"

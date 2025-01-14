@@ -119,17 +119,6 @@ input:disabled, select:disabled {
   color: var(--color4);
 }
 
-.profile-container {
-background-color: var(--color2);
-color: white;
-padding: 20px;
-border-radius: 10px;
-box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-max-width: 600px;
-margin: 20px auto;
-}
-
-
 .image-container {
 position: relative;
 width: 150px; /* Ajusta según el tamaño de tu imagen */
@@ -161,8 +150,8 @@ cursor: pointer;
 background-color: rgba(0, 0, 0, 0.7);
 }
 
-@media (max-width: 768px) { 
-.profile-container {
-    margin: 10px;
-}
+@media (max-width: 660px) { 
+  .profile-container {
+      margin: 10px;
+  }
 }

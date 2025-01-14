@@ -54,6 +54,22 @@ body {
     position: relative;
 }
 
+/* Navbar superior siempre visible */
+.navbar-top {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color2);
+    color: white;
+    z-index: 10;
+    padding: 0.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
 .navbar-center {
     display: flex;
     flex-grow: 1;
@@ -154,22 +170,24 @@ body {
 }
 
 .navbar-responsive-icons {
-    display: none; /* Oculto en vistas normales */
+    display: none;    
+    position: fixed;
+    bottom: 0;
+    width: 100%;
     justify-content: space-around;
     background-color: var(--color2);
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: 100%;
     padding: 0.5rem 0;
     z-index: 10;
 }
 
 .navbar-responsive-icons .responsive-icon {
     color: var(--color5);
-    font-size: 1.5rem;
+    font-size: 1.7rem;
     text-decoration: none;
     transition: color 0.3s;
+    display: flex;
+    flex-direction: column; /* Asegura que el texto esté debajo del ícono */
+    align-items: center; /* Centra los íconos y el texto */
 }
 
 .navbar-responsive-icons .responsive-icon:hover {
@@ -187,9 +205,34 @@ body {
     color: var(--color4);
 }
 
+/* Título de la vista en la parte superior en versión responsive */
+.navbar-title-responsive {
+    display: none;
+    background-color: var(--color2);
+    padding: 0.7rem 1.2rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color5); /* Color del texto del título */
+    font-family: Arial, sans-serif;
+    
+}
+
+/* Muestra el nombre solo en la vista correcta */
+.navbar-responsive-icons .responsive-icon span {
+    display: block; /* Muestra el texto */
+    font-size: 0.8rem;
+    color: var(--color5);
+    margin-top: 0.2rem; /* Espacio entre el ícono y el nombre */
+    margin-bottom: -0.2rem; /* Espacio entre el ícono y el nombre */
+    text-align: center; /* Alinea el texto en el centro */
+}
 
 /* Responsividad */
 @media (max-width: 768px) {
+
+    .navbar {
+        padding: 0.5rem; /* Navbar normal */
+    }
 
     .navbar-title {
         display: none;
@@ -223,15 +266,39 @@ body {
     }
 
     .navbar-responsive-icons {
-        display: flex;        
-        position: relative;
+        display: flex;
     }
 
     .navbar-logo {
-        height: 21px;
+        height: 25px;
     }
 
     .user-name {
         display: none; /* Oculta el nombre del usuario */
+    }
+
+    /* Mueve la imagen de perfil a la parte superior */
+    .navbar-right {
+        display: none;
+    }
+
+    .navbar-right .profile-image {
+        height: 40px;
+        width: 40px;
+        border-radius: 50%;
+        margin-left: 1rem;
+    }
+
+    .navbar-title-responsive{
+        display: flex;
+    }
+
+    .navbar-right-responsive .user-menu .logout{
+        font-size: 1.7rem;
+    }
+
+    /* Ajustes para los íconos y el nombre */
+    .navbar-responsive-icons .responsive-icon {
+        font-size: 1.5rem; /* Ajusta el tamaño de los íconos */
     }
 }
