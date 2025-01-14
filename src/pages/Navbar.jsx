@@ -94,10 +94,10 @@ const Navbar = () => {
                 </Link>
                 <Link to="/Profile" className="responsive-icon">
                     <img
-                        src={user.profile_image ? `${user.profile_image}?${new Date().getTime()}` : 'default-image.jpg'}
-                        alt="Foto de perfil"
+                        src={user.profile_image ? `${user.profile_image}?${new Date().getTime()}` : 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png'}
+                        alt=""
                         className="profile-image navbar-logo"
-                        onError={(e) => (e.target.src = 'default-image.jpg')}
+                        onError={(e) => (e.target.src = 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')}
                     />
                     <span>Perfil</span> {/* Texto siempre visible */}
                 </Link>
