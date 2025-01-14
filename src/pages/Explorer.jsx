@@ -260,7 +260,7 @@ const Explorer = () => {
                 />
 
                  {/* Select para categorías múltiples */}
-                {/* <Select
+                <Select
                     isMulti
                     options={[
                         { value: "1", label: "Acción" },
@@ -309,7 +309,7 @@ const Explorer = () => {
                     ]}
                     value={selectedCategories.map(value => ({ value, label: value }))}
                     onChange={handleCategoryChange}
-                /> */}
+                />
 
                 <button onClick={handleSearchClick} className="search-button">Buscar</button>
             </div>
