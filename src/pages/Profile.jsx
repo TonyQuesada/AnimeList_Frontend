@@ -38,10 +38,6 @@ const Profile = () => {
 
   useEffect(() => {
 
-    // Limpiar toasts pendientes antes de mostrar uno nuevo
-    toast.dismiss();
-    toast.success('Cargando datos del usuario...');
-
     // Cargar los datos del usuario al componente
     axios.get(`${API}/users/${user.user_id}`)
       .then(response => {
