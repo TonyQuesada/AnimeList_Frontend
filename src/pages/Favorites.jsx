@@ -188,7 +188,15 @@ const Favorites = () => {
             
             return dateComparison; // Si no, devolver el resultado de la comparación de fecha
         } else {
-            return 0; // Sin orden específico
+            // Ordenar primero por fecha
+            const dateComparison = new Date(b.date_added) - new Date(a.date_added);
+            
+            // Si las fechas son iguales, ordenar por nombre
+            if (dateComparison === 0) {
+                return a.title.localeCompare(b.title); // Si las fechas son iguales, ordenar alfabéticamente por nombre
+            }
+            
+            return dateComparison; // Si no, devolver el resultado de la comparación de fecha
         }
     });
     
