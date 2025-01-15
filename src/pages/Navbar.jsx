@@ -11,7 +11,6 @@ const Navbar = () => {
     const location = useLocation();
     const [pageTitle, setPageTitle] = useState("");
     const [image, setImage] = useState(null);
-    const [updateImageKey, setUpdateImageKey] = useState(0);
 
     useEffect(() => {
         // Establecer el título de la página basado en la ruta actual
@@ -33,21 +32,12 @@ const Navbar = () => {
     useEffect(() => {
         setImage(user.profile_image);
     }, [user.profile_image]);
-    
-    useEffect(() => {
-        // Llama a esta función después de cambiar la foto en el perfil
-        handleImageUpdate();
-    }, [user.profile_image]);
-    
+        
     if (!user) {
         return null;
     }
 
     const toggleMenu = () => setMenuOpen(!menuOpen);
-
-    const handleImageUpdate = () => {
-        setUpdateImageKey((prevKey) => prevKey + 1);
-    };
 
     return (
         <>
@@ -109,7 +99,7 @@ const Navbar = () => {
                 </Link>
                 <Link to="/Profile" className="responsive-icon">
                     <img
-                        src={`${user.profile_image}?${updateImageKey}`}
+                        src={image || (user.profile_image ? `${user.profile_image}?${new Date().getTime()}` : 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')}
                         alt=""
                         className="profile-image navbar-logo"
                         onError={(e) => (e.target.src = 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')}
