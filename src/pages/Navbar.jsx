@@ -29,6 +29,13 @@ const Navbar = () => {
         }
     }, [location]);
 
+    useEffect(() => {
+        if (user && user.profile_image) {
+            setImage(user.profile_image);
+        }
+    }, [user.profile_image]);
+
+    
     if (!user) {
         return null;
     }
@@ -95,7 +102,7 @@ const Navbar = () => {
                 </Link>
                 <Link to="/Profile" className="responsive-icon">
                     <img
-                        src={image || user.profile_image ? `${user.profile_image}?${new Date().getTime()}` : 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png'}
+                        src={image || (user.profile_image ? `${user.profile_image}?${new Date().getTime()}` : 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')}
                         alt=""
                         className="profile-image navbar-logo"
                         onError={(e) => (e.target.src = 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')}
