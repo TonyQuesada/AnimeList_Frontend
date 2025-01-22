@@ -24,7 +24,7 @@ function App() {
     <>
       <ToastContainer autoClose={2000} limit={2} closeOnClick pauseOnHover toastClassName="toast-custom" position={isMobile ? "top-right" : "bottom-right"} hideProgressBar draggable={false} />
       <BrowserRouter>
-        <Navbar />
+        {user && <Navbar />}
         <Routes>
           <Route path="/" element={<Navigate to="/Login" />} />
           <Route path="/Login" element={user ? <Navigate to="/Explorer" /> : <Login />} />
