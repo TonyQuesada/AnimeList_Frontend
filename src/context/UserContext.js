@@ -8,7 +8,15 @@ export const UserProvider = ({ children }) => {
 
     const [user, setUser] = useState(() => {
         const storedUser = localStorage.getItem("user");
-        return storedUser ? JSON.parse(storedUser) : null;
+        if (storedUser) {
+            const parsedUser = JSON.parse(storedUser);
+            if (parsedUser.profile_image) {
+                // Asegúrate de que la imagen tenga un cache buster si existe
+                parsedUser.profile_image = `${parsedUser.profile_image}?t=${Date.now()}`;
+            }
+            return parsedUser;
+        }
+        return null;
     });
 
     const login = (userData) => {
@@ -22,8 +30,10 @@ export const UserProvider = ({ children }) => {
     };
 
     const updateProfileImage = (newImage) => {
-        setProfileImage(newImage);
-        setUser((prevUser) => ({ ...prevUser, profile_image: newImage })); // Actualiza el usuario con la nueva imagen
+        const updatedImage = `${newImage}?t=${Date.now()}`; // Agrega un timestamp único
+        setProfileImage(updatedImage);
+        setUser((prevUser) => ({ ...prevUser, profile_image: updatedImage })); // Actualiza el usuario con la nueva URL
+        localStorage.setItem("user", JSON.stringify({ ...user, profile_image: updatedImage })); // Guarda en localStorage
     };
 
     return (
