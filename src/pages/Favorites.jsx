@@ -16,14 +16,12 @@ const Favorites = () => {
     const [statusFilter, setStatusFilter] = useState('');
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(16);
+    const [itemsPerPage, setItemsPerPage] = useState(Infinity);
     const [sortOrder, setSortOrder] = useState(''); // Nuevo estado para ordenación
 
     useEffect(() => {
 
-        if (!user) {
-            logout();
-        }
+        if (!user) { logout(); }
 
         const fetchAllFavorites = async () => {
             try {
@@ -51,29 +49,34 @@ const Favorites = () => {
     useEffect(() => {
         const updateItemsPerPage = () => {
             const width = window.innerWidth;
-
-            if (width >= 1583) {
-                setItemsPerPage(16);
-            } else if (width <= 1582 && width >= 1388) {
-                setItemsPerPage(14);
-            } else if (width <= 1387 && width >= 1192) {
-                setItemsPerPage(18);
-            } else if (width <= 1191 && width >= 996) {
-                setItemsPerPage(15);
-            } else if (width <= 995 && width >= 800) {
-                setItemsPerPage(8);
-            } else if (width <= 799 && width >= 596) {
-                setItemsPerPage(12);
-            } else if (width <= 595) {
-                setItemsPerPage(16);
-            }
+    
+            // Definimos los rangos y valores en un arreglo
+            const ranges = [
+                { maxWidth: 595, items: 16 },
+                { maxWidth: 799, items: 12 },
+                { maxWidth: 995, items: 8 },
+                { maxWidth: 1191, items: 15 },
+                { maxWidth: 1387, items: 18 },
+                { maxWidth: 1582, items: 14 },
+                { maxWidth: 1780, items: 16 },
+                { maxWidth: 1976, items: 18 },
+                { maxWidth: 2171, items: 20 },
+                { maxWidth: 2367, items: 22 },
+                { maxWidth: 2563, items: 24 },
+                { maxWidth: 2759, items: 26 },
+                { maxWidth: Infinity, items: 28 }, // Cualquier valor mayor
+            ];
+    
+            // Buscamos el primer rango que coincide
+            const matchedRange = ranges.find(range => width <= range.maxWidth);
+            if (matchedRange) setItemsPerPage(matchedRange.items);
         };
-
+    
         updateItemsPerPage(); // Llamada inicial
         window.addEventListener('resize', updateItemsPerPage); // Actualiza al cambiar tamaño de ventana
-
+    
         return () => window.removeEventListener('resize', updateItemsPerPage); // Limpieza del evento
-    }, []);
+    }, []);    
 
     // Actualizar el estado del anime en la base de datos
     const handleStatusChangeFavorite = async (anime_id, newStatusId) => {
@@ -150,15 +153,9 @@ const Favorites = () => {
         );
     };    
 
-    // Handle filtering by title
-    const handleSearchChange = (e) => {
-        setSearch(e.target.value);
-    };
-
-    // Handle status filter change
-    const handleStatusChange = (e) => {
-        setStatusFilter(e.target.value);
-    };
+    const handleSearchChange = (e) => { setSearch(e.target.value); }; // Handle filtering by title
+    const handleStatusChange = (e) => { setStatusFilter(e.target.value); }; // Handle status filter change
+    const handleSortChange = (e) => { setSortOrder(e.target.value); }; // Manejar cambio en el select de ordenación
 
     // Filter favorites based on title and status
     const filteredData = favorites.filter(favorito => {
@@ -166,12 +163,6 @@ const Favorites = () => {
         const matchesStatus = statusFilter ? favorito.status_id === parseInt(statusFilter) : true;
         return matchesTitle && matchesStatus;
     });
-
-
-    // Manejar cambio en el select de ordenación
-    const handleSortChange = (e) => {
-        setSortOrder(e.target.value);
-    };
 
     // Filtrar y ordenar favoritos
     const filteredAndSortedData = filteredData.sort((a, b) => {
@@ -199,8 +190,7 @@ const Favorites = () => {
             return dateComparison; // Si no, devolver el resultado de la comparación de fecha
         }
     });
-    
-    
+        
     // Paginate filtered data
     const startIndex = (currentPage - 1) * itemsPerPage;
     const currentItems = filteredAndSortedData.slice(startIndex, startIndex + itemsPerPage);
@@ -267,31 +257,34 @@ const Favorites = () => {
                 {currentItems.map((favorito) => (
                     <div className="favorito" key={favorito.anime_id}>
                         {favorito.image_url && <img src={favorito.image_url} alt={favorito.title} />}
-                        <h2>{favorito.title}</h2>
-                        <p>{favorito.description}</p>
                         
-                        <div className="status-container">
+                        <div class="favorito-contenido">
+                            <h2>{favorito.title}</h2>
+                            <p>{favorito.description}</p>
+                            
+                            <div className="status-container">
 
-                            {/* Select para cambiar el estado */}
-                            <select
-                                className="status-select"
-                                value={favorito.status_id}
-                                onChange={(e) => handleStatusChangeFavorite(favorito.anime_id, parseInt(e.target.value))}
-                            >
-                                {statuses.map((status) => (
-                                    <option key={status.status_id} value={status.status_id}>
-                                        {status.status_name}
-                                    </option>
-                                ))}
-                            </select>
+                                {/* Select para cambiar el estado */}
+                                <select
+                                    className="status-select"
+                                    value={favorito.status_id}
+                                    onChange={(e) => handleStatusChangeFavorite(favorito.anime_id, parseInt(e.target.value))}
+                                >
+                                    {statuses.map((status) => (
+                                        <option key={status.status_id} value={status.status_id}>
+                                            {status.status_name}
+                                        </option>
+                                    ))}
+                                </select>
 
-                            {/* Botón de eliminar favorito */}
-                            <button
-                                className="delete-btn"
-                                onClick={() => confirmDeleteFavorite(favorito.anime_id)}
-                            >
-                                <FaTrashAlt />
-                            </button>
+                                {/* Botón de eliminar favorito */}
+                                <button
+                                    className="delete-btn-fav"
+                                    onClick={() => confirmDeleteFavorite(favorito.anime_id)}
+                                >
+                                    <FaTrashAlt className="fav-icon"/>
+                                </button>
+                            </div>
                         </div>
 
                     </div>
@@ -335,6 +328,5 @@ const Favorites = () => {
         </div>
     );
 };
-
 
 export default Favorites

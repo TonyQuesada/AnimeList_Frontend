@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify'; // Importar Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
-import { FaTrashAlt } from 'react-icons/fa';
+import { FaTrashAlt, FaRegHeart } from 'react-icons/fa';
 import '../assets/styles/style.css';
 import Select from 'react-select';
 
@@ -19,43 +19,40 @@ const Explorer = () => {
     const [search, setSearch] = useState('');  // Campo de búsqueda
     const [currentPage, setCurrentPage] = useState(1);
     const [hasNextPage, setHasNextPage] = useState(false);  // Indica si hay más páginas
-    
-    // Estado para `itemsPerPage`
-    const [itemsPerPage, setItemsPerPage] = useState(16);    
-
+    const [itemsPerPage, setItemsPerPage] = useState(Infinity);    
     const [selectedCategories, setSelectedCategories] = useState([]); // Estado para categorías seleccionadas
 
     useEffect(() => {
-        // Función para ajustar `itemsPerPage` según el tamaño de pantalla
         const updateItemsPerPage = () => {
             const width = window.innerWidth;
-
-            if (width >= 1583) {
-                setItemsPerPage(16);
-            } else if (width <= 1582 && width >= 1388) {
-                setItemsPerPage(14);
-            } else if (width <= 1387 && width >= 1192) {
-                setItemsPerPage(18);
-            } else if (width <= 1191 && width >= 996) {
-                setItemsPerPage(15);
-            } else if (width <= 995 && width >= 800) {
-                setItemsPerPage(8);
-            } else if (width <= 799 && width >= 596) {
-                setItemsPerPage(12);
-            } else if (width <= 595) {
-                setItemsPerPage(16);
-            }
+    
+            // Definimos los rangos y valores en un arreglo
+            const ranges = [
+                { maxWidth: 595, items: 16 },
+                { maxWidth: 799, items: 12 },
+                { maxWidth: 995, items: 8 },
+                { maxWidth: 1191, items: 15 },
+                { maxWidth: 1387, items: 18 },
+                { maxWidth: 1582, items: 14 },
+                { maxWidth: 1780, items: 16 },
+                { maxWidth: 1976, items: 18 },
+                { maxWidth: 2171, items: 20 },
+                { maxWidth: 2367, items: 22 },
+                { maxWidth: 2563, items: 24 },
+                { maxWidth: 2759, items: 26 },
+                { maxWidth: Infinity, items: 28 }, // Cualquier valor mayor
+            ];
+    
+            // Buscamos el primer rango que coincide
+            const matchedRange = ranges.find(range => width <= range.maxWidth);
+            if (matchedRange) setItemsPerPage(matchedRange.items);
         };
-
-        // Llama a la función una vez al cargar la página
-        updateItemsPerPage();
-
-        // Agrega el evento de redimensionamiento
-        window.addEventListener('resize', updateItemsPerPage);
-
-        // Limpia el evento al desmontar el componente
-        return () => window.removeEventListener('resize', updateItemsPerPage);
-    }, []); // Se ejecuta solo al montar el componente
+    
+        updateItemsPerPage(); // Llamada inicial
+        window.addEventListener('resize', updateItemsPerPage); // Actualiza al cambiar tamaño de ventana
+    
+        return () => window.removeEventListener('resize', updateItemsPerPage); // Limpieza del evento
+    }, []);
 
     useEffect(() => {
         // Actualiza la lista de animes cada vez que `itemsPerPage` cambie
@@ -159,9 +156,7 @@ const Explorer = () => {
         }
     };
 
-    const handleSearchChange = (e) => {
-        setSearch(e.target.value);
-    };
+    const handleSearchChange = (e) => { setSearch(e.target.value); };
 
     const handleSearchClick = () => {
         setCurrentPage(1);
@@ -181,7 +176,7 @@ const Explorer = () => {
         fetchAnime(page, selectedCategories);
     };
 
-    const handleStatusChangeFavorite = async (anime_id, newStatusId) => {
+    const handleStatusChangeFavorite = async (anime_id) => {
         try {
 
             // Realizar la solicitud a la API de Jikan para obtener los detalles del anime
@@ -201,9 +196,9 @@ const Explorer = () => {
                 api_id: anime.mal_id,
                 title: anime.title || "Título no disponible",
                 synopsis: anime.synopsis || "Sinopsis no disponible",
-                image_url: anime.images?.jpg?.image_url || "",
+                image_url: anime.images?.jpg?.large_image_url || "",
                 user_id: user.user_id,
-                status_id: newStatusId,
+                status_id: "0",
                 year: anime.aired?.prop?.from?.year || "No definido",
             }).catch(err => {
                 console.error("Error en la solicitud axios:", err.response || err.message);
@@ -211,17 +206,18 @@ const Explorer = () => {
 
             const existingFavorite = favorites.find(fav => fav.api_id === anime_id);
             var isNewFavorite = !existingFavorite;
+
             // Actualizar la lista de favoritos localmente
             setFavorites(prev => {
                 const favoriteExists = prev.find(fav => fav.api_id === anime_id);
                 if (favoriteExists) {
                     return prev.map(fav =>
-                        fav.api_id === anime_id ? { ...fav, status_id: newStatusId } : fav
+                        fav.api_id === anime_id ? { ...fav, status_id: 0 } : fav
                     );
                 } else {
                     return [
                         ...prev,
-                        { anime_id, status_id: newStatusId, api_id: anime_id, title: anime.title },
+                        { anime_id, status_id: 0, api_id: anime_id, title: anime.title },
                     ];
                 }
             });
@@ -380,43 +376,39 @@ const Explorer = () => {
             <div className="favoritos">
                 {animeList.map((anime) => {
                     const favorite = favorites.find(fav => fav.api_id === anime.mal_id);
-                    const currentStatusId = favorite ? favorite.status_id : 0;
 
                     return (
                         <div className="favorito" key={anime.mal_id}>
-                            {anime.images?.jpg?.image_url && (
-                                <img src={anime.images.jpg.image_url} alt={anime.title} />
+                            {anime.images?.jpg?.large_image_url && (
+                                <img src={anime.images.jpg.large_image_url} alt={anime.title} />
                             )}
-                            <h2>{anime.title ? anime.title : "Título no disponible"}</h2>
-                            <p>{anime.synopsis ? anime.synopsis : "Sinopsis no disponible"}</p>
+
+                            <div class="favorito-contenido">
+                                <h2>{anime.title ? anime.title : "Título no disponible"}</h2>
+                                <p>{anime.synopsis ? anime.synopsis : "Sinopsis no disponible"}</p>
 
                             <div className="status-container">
-                                {/* Select de estado */}
-                                <select
-                                    className="status-select"
-                                    value={currentStatusId}
-                                    onChange={(e) =>
-                                        handleStatusChangeFavorite(anime.mal_id, parseInt(e.target.value))
-                                    }
-                                >
-                                    <option value="0">Sin asignar</option>
-                                    {statuses.map((status) => (
-                                        <option key={status.status_id} value={status.status_id}>
-                                            {status.status_name}
-                                        </option>
-                                    ))}
-                                </select>
+                                {/* Botón de agregar */}
+                                {!favorite && (
+                                    <button
+                                        className="success-btn"
+                                        onClick={() => handleStatusChangeFavorite(anime.mal_id)} 
+                                    >
+                                        <span className='fav-span'>Agregar a Favoritos </span><FaRegHeart className="exp-icon"/>
+                                    </button>
+                                )}
 
                                 {/* Botón de eliminar */}
-                                {favorite && (                                    
+                                {favorite && (
                                     <button
                                         className="delete-btn"
                                         onClick={() => confirmDeleteFavorite(anime.mal_id)}
                                     >
-                                        <FaTrashAlt />
+                                        <span className='fav-span'>Eliminar de Favoritos</span><FaTrashAlt className="exp-icon"/>
                                     </button>
                                 )}
                             </div>
+                        </div>
                         </div>
                     );
                 })}

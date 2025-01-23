@@ -227,6 +227,10 @@ body {
     text-align: center; /* Alinea el texto en el centro */
 }
 
+.navbar-right-responsive{
+    display: none;
+}
+
 /* Responsividad */
 @media (max-width: 768px) {
 
@@ -277,20 +281,19 @@ body {
         display: none; /* Oculta el nombre del usuario */
     }
 
-    /* Mueve la imagen de perfil a la parte superior */
-    .navbar-right {
-        display: none;
+    .navbar-title-responsive{
+        display: flex;
     }
 
-    .navbar-right .profile-image {
+    .navbar-right-responsive {
+        display: block; /* Muestra el texto */
+    }
+
+    .navbar-right-responsive .profile-image {
         height: 40px;
         width: 40px;
         border-radius: 50%;
         margin-left: 1rem;
-    }
-
-    .navbar-title-responsive{
-        display: flex;
     }
 
     .navbar-right-responsive .user-menu .logout{
