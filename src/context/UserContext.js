@@ -15,10 +15,8 @@ export const UserProvider = ({ children }) => {
         const API = process.env.REACT_APP_BACKEND_URL;
         try {
             const response = await fetch(`${API}/Users/${userId}/profile-image`);
-            console.log(response);
             if (response.ok) {
                 const data = await response.json();
-                console.log("Imagen de perfil recibida del backend:", data.profile_image);
                 return data.profile_image;
             } else {
                 console.error("Error al obtener la imagen del perfil:", response.status);
@@ -33,13 +31,10 @@ export const UserProvider = ({ children }) => {
     const updateProfileImage = async () => {
         if (user && user.user_id) {
             const newImage = await fetchProfileImage(user.user_id);
-            console.log("Nueva imagen obtenida:", newImage);
             if (newImage && newImage !== profileImage) {
-                console.log("Actualizando la imagen de perfil...");
                 setProfileImage(newImage); // Actualiza la imagen de perfil
                 setUser((prevUser) => {
                     const updatedUser = { ...prevUser, profile_image: newImage };
-                    console.log("Usuario actualizado:", updatedUser);
                     localStorage.setItem("user", JSON.stringify(updatedUser)); // Actualiza en localStorage
                     return updatedUser;
                 });
