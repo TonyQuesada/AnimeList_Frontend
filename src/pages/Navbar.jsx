@@ -7,14 +7,10 @@ import { AiOutlineSearch, AiOutlineHeart } from "react-icons/ai";
 import "../assets/styles/navbar.css";
 
 const Navbar = () => {
-    const { user, logout } = useContext(UserContext);
+    const { user, logout, profileImage } = useContext(UserContext);
     const [menuOpen, setMenuOpen] = useState(false);
     const location = useLocation();
     const [pageTitle, setPageTitle] = useState("");
-    const [image, setImage] = useState(null);
-    const [userData, setUserData] = useState(null);
-
-    const API = process.env.REACT_APP_BACKEND_URL;
 
     useEffect(() => {
         // Establecer el título de la página basado en la ruta actual
@@ -32,27 +28,6 @@ const Navbar = () => {
                 setPageTitle("");
         }
     }, [location]);
-
-    useEffect(() => {
-        const fetchUserProfileImage = async () => {
-            try {
-                const response = await axios.get(`${API}/users/${user.user_id}`);
-                const updatedProfileImage = response.data.profile_image;
-    
-                // Asegúrate de agregar un timestamp para evitar problemas de caché
-                setImage(`${updatedProfileImage}?cache=${new Date().getTime()}`);
-            } catch (error) {
-                console.error("Error fetching profile image:", error);
-    
-                // Si hay un error, usa la imagen por defecto
-                setImage('https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png');
-            }
-        };
-    
-        if (user?.user_id) {
-            fetchUserProfileImage();
-        }
-    }, [user?.user_id, API]);
     
     return (
         <>
@@ -113,8 +88,19 @@ const Navbar = () => {
                     <span>Favoritos</span> {/* Texto siempre visible */}
                 </Link>
                 <Link to="/Profile" className="responsive-icon">
-                    {!image && !user.profile_image && <span>...</span>}
-                    <img src={image || (user.profile_image ? `${user.profile_image}?${new Date().getTime()}` : 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')} alt="" className="profile-image navbar-logo" onError={(e) => (e.target.src = 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')} />
+                    <img
+                        src={
+                            profileImage ||
+                            user?.profile_image ||
+                            "https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png"
+                        }
+                        alt="Perfil"
+                        className="profile-image navbar-logo"
+                        onError={(e) =>
+                            (e.target.src =
+                            "https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png")
+                        }
+                    />
                     <span>Perfil</span> {/* Texto siempre visible */}
                 </Link>
             </div>

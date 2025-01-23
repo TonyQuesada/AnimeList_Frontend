@@ -128,19 +128,13 @@ const Profile = () => {
       const response = await axios.post(
         `${API}/uploadProfileImage?username=${username}`,  // El username se pasa como parámetro en la URL
           formData,
-          {
-            headers: { "Content-Type": "multipart/form-data" },
-          }
+          { headers: { "Content-Type": "multipart/form-data" } }
       );
-          
-      // Imprimir para depuración
-      console.log("Respuesta del servidor:", response.data);
-
+      
       // Aquí se actualiza el estado para reflejar la nueva foto de perfil
-      const updatedUserData = { ...userData, profile_image: response.data.imageUrl };
-      console.log("Datos actualizados:", updatedUserData);
-      setUserData(updatedUserData); // Actualiza el estado local para que se renderice la nueva imagen
-      updateProfileImage(response.data.imageUrl);
+      const newImageUrl = response.data.imageUrl;      
+      setUserData((prev) => ({ ...prev, profile_image: newImageUrl }));
+      updateProfileImage(newImageUrl); // Actualiza el contexto con la nueva imagen
 
     } catch (error) {
       console.error("Error al subir la imagen:", error.response?.data || error.message);
