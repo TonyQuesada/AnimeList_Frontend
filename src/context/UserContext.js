@@ -11,12 +11,17 @@ export const UserProvider = ({ children }) => {
     const [profileImage, setProfileImage] = useState(null);
 
     // Llama al servidor para obtener la imagen de perfil más actual
-    const fetchProfileImage = async (userId) => {
+    const fetchProfileImage = async (userId) => {        
+        const API = process.env.REACT_APP_BACKEND_URL;
         try {
-            const response = await fetch(`/Users/${userId}/profile-image`);
+            const response = await fetch(`${API}/Users/${userId}/profile-image`);
+            console.log(response);
             if (response.ok) {
                 const data = await response.json();
-                return data.profile_image; // Asume que la respuesta tiene la propiedad profile_image
+                console.log("Imagen de perfil recibida del backend:", data.profile_image);
+                return data.profile_image;
+            } else {
+                console.error("Error al obtener la imagen del perfil:", response.status);
             }
         } catch (error) {
             console.error("Error fetching profile image:", error);
@@ -26,12 +31,18 @@ export const UserProvider = ({ children }) => {
 
     // Verifica si la imagen de perfil debe ser actualizada
     const updateProfileImage = async () => {
-        if (user && user.id) {
-            const newImage = await fetchProfileImage(user.id);
+        if (user && user.user_id) {
+            const newImage = await fetchProfileImage(user.user_id);
+            console.log("Nueva imagen obtenida:", newImage);
             if (newImage && newImage !== profileImage) {
+                console.log("Actualizando la imagen de perfil...");
                 setProfileImage(newImage); // Actualiza la imagen de perfil
-                setUser((prevUser) => ({ ...prevUser, profile_image: newImage })); // Actualiza el usuario en el estado
-                localStorage.setItem("user", JSON.stringify({ ...user, profile_image: newImage })); // Actualiza en localStorage
+                setUser((prevUser) => {
+                    const updatedUser = { ...prevUser, profile_image: newImage };
+                    console.log("Usuario actualizado:", updatedUser);
+                    localStorage.setItem("user", JSON.stringify(updatedUser)); // Actualiza en localStorage
+                    return updatedUser;
+                });
             }
         }
     };
