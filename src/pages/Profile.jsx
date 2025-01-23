@@ -12,7 +12,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 const Profile = () => {
 
-  const { user } = useContext(UserContext); 
+  const { user, logout, updateProfileImage } = useContext(UserContext);
   const API = process.env.REACT_APP_BACKEND_URL;
 
   const [userData, setUserData] = useState(null);
@@ -140,6 +140,7 @@ const Profile = () => {
       const updatedUserData = { ...userData, profile_image: response.data.imageUrl };
       console.log("Datos actualizados:", updatedUserData);
       setUserData(updatedUserData); // Actualiza el estado local para que se renderice la nueva imagen
+      updateProfileImage(response.data.imageUrl);
 
     } catch (error) {
       console.error("Error al subir la imagen:", error.response?.data || error.message);

@@ -19,8 +19,15 @@ export const UserProvider = ({ children }) => {
         localStorage.removeItem("user");
     };
 
+    const updateProfileImage = (newImageUrl) => {
+        setUser((prevUser) => ({
+            ...prevUser,
+            profile_image: newImageUrl,
+        }));
+    };
+
     return (
-        <UserContext.Provider value={{ user, login, logout }}>
+        <UserContext.Provider value={{ user, login, logout, updateProfileImage }}>
             {children}
         </UserContext.Provider>
     );
