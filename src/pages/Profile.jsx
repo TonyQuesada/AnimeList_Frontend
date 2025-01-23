@@ -12,7 +12,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 const Profile = () => {
 
-  const { user, logout, updateProfileImage } = useContext(UserContext);
+  const { user, updateProfileImage } = useContext(UserContext);
   const API = process.env.REACT_APP_BACKEND_URL;
 
   const [userData, setUserData] = useState(null);
@@ -155,7 +155,7 @@ const Profile = () => {
 
       <div className="image-container">
         {!image && !userData.profile_image && <span>Cargando...</span>}
-        <img src={image || (userData.profile_image ? `${userData.profile_image}?${new Date().getTime()}` : 'default-image.jpg')} alt="Foto de perfil" className="profile-image" onError={(e) => (e.target.src = 'default-image.jpg')} />
+        <img src={image || (userData.profile_image ? `${userData.profile_image}?${new Date().getTime()}` : 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')} alt="Foto de perfil" className="profile-image" onError={(e) => (e.target.src = 'https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png')} />
         {/* Ícono de lápiz en la parte inferior derecha */}
         <label htmlFor="file-upload" className="edit-icon">
           <FaPencilAlt />
