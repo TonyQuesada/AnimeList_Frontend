@@ -31,7 +31,7 @@ const Navbar = () => {
 
     useEffect(() => {
         if (user.profile_image) {
-            setImage(`${user.profile_image}?${new Date().getTime()}`);
+            setImage(`${user.profile_image}?cache=${new Date().getTime()}`);
         } else {
             setImage('https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png');
         }
