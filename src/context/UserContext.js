@@ -30,10 +30,11 @@ export const UserProvider = ({ children }) => {
     };
 
     const updateProfileImage = (newImage) => {
-        const updatedImage = `${newImage}?t=${Date.now()}`; // Agrega un timestamp único
+        // Usar un hash o timestamp único para la imagen
+        const updatedImage = `${newImage}?userId=${user.id}&t=${Date.now()}`;
         setProfileImage(updatedImage);
-        setUser((prevUser) => ({ ...prevUser, profile_image: updatedImage })); // Actualiza el usuario con la nueva URL
-        localStorage.setItem("user", JSON.stringify({ ...user, profile_image: updatedImage })); // Guarda en localStorage
+        setUser((prevUser) => ({ ...prevUser, profile_image: updatedImage }));
+        localStorage.setItem("user", JSON.stringify({ ...user, profile_image: updatedImage }));
     };
 
     return (
