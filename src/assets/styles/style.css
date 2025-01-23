@@ -349,6 +349,25 @@ body {
     margin: 0 10px;
 }
 
+/* Select de generos */
+.p-multiselect{
+    border-color: var(--color3) !important; /* Borde al enfocar */
+    margin-right: 10px; /* Añadir espacio entre el texto y el botón Clear */    
+}
+
+.p-multiselect:focus-within{
+    border-color: var(--color4) !important; /* Borde al enfocar */
+    box-shadow: 0 0 5px var(--color4) !important; /* Sombra al enfocar */
+}
+
+.p-multiselect-clear-icon {
+    right: 33px !important;
+}
+
+
+
+
+
 
 
 /* Ajuste para pantallas pequeñas */

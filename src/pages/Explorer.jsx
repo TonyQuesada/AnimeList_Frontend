@@ -5,7 +5,9 @@ import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
 import { FaTrashAlt, FaRegHeart } from 'react-icons/fa';
 import '../assets/styles/style.css';
-import Select from 'react-select';
+// import { MultiSelect } from 'react-multi-select-component';
+import { MultiSelect } from 'primereact/multiselect';
+        
 
 const Explorer = () => {
 
@@ -166,10 +168,8 @@ const Explorer = () => {
         fetchAnime(1, selectedCategories);
     };
 
-    const handleCategoryChange = (selectedOptions) => {
-        // Mapea las opciones seleccionadas y ajusta el estado
-        const selectedValues = selectedOptions ? selectedOptions.map(option => option.value) : [];
-        setSelectedCategories(selectedValues);
+    const handleCategoryChange = (selectedValues) => {
+        setSelectedCategories(selectedValues); // Actualiza las categorías seleccionadas
         setCurrentPage(1);  // Resetea a la primera página cuando se cambian los géneros
         fetchAnime(1, selectedValues);  // Pasa selectedValues directamente a fetchAnime
     };
@@ -313,67 +313,26 @@ const Explorer = () => {
 
                 <button onClick={handleSearchClick} className="search-button">Buscar</button>
 
-                 {/* Select para categorías múltiples */}
-                <Select
-                    isMulti
-                    placeholder="Genero"
-                    className="category-select"
-                    options={genres.map(genre => ({
-                        value: genre.id, 
-                        label: genre.name  // Asegúrate de que el formato coincida
+                {/* Select para categorías múltiples */}                       
+                <MultiSelect
+                    value={selectedCategories}
+                    options={genres.map((genre) => ({
+                        label: genre.name,
+                        value: genre.id
                     }))}
-                    value={selectedCategories.map(id => {
-                        const genre = genres.find(g => g.id === id);
-                        return genre ? { value: genre.id, label: genre.name } : null;
-                    }).filter(Boolean)}  // Filtra valores nulos si no se encuentran géneros
-                    onChange={handleCategoryChange}
-                    styles={{
-                        control: (provided, state) => ({
-                            ...provided,
-                            backgroundColor: '#514a6b',  // Fondo del control
-                            borderColor: state.isFocused ? '#d092b4' : '#8a6888', // Cambiar el borde cuando está abierto
-                            borderRadius: '4px',
-                            boxShadow: state.isFocused ? '0 0 5px #d092b4' : '', // Agregar sombra cuando está enfocado
-                            '&:hover': {
-                                borderColor: state.isFocused ? '#d092b4' : '#8a6888', // Borde en hover
-                                boxShadow: state.isFocused ? '0 0 5px #d092b4' : '', // Sombra en hover
-                            },
-                        }),
-                        menu: (provided) => ({
-                            ...provided,
-                            backgroundColor: '#514a6b',  // Fondo del menú desplegable
-                        }),
-                        option: (provided, state) => ({
-                            ...provided,
-                            backgroundColor: state.isSelected
-                                ? '#e5bad4'  // Color de fondo cuando está seleccionado
-                                : state.isFocused
-                                ? '#d092b4'  // Fondo cuando se pasa el mouse
-                                : '#514a6b',  // Fondo por defecto
-                            color: '#fff',  // Color de texto
-                        }),
-                        multiValue: (provided) => ({
-                            ...provided,
-                            backgroundColor: '#d092b4',  // Fondo de las opciones seleccionadas
-                        }),
-                        multiValueLabel: (provided) => ({
-                            ...provided,
-                            color: '#fff',  // Color del texto dentro de las opciones seleccionadas
-                        }),
-                        multiValueRemove: (provided) => ({
-                            ...provided,
-                            backgroundColor: '#8a6888',  // Fondo del ícono de eliminar
-                            color: '#fff',
-                            ':hover': {
-                                backgroundColor: '#d092b4',  // Cambio de fondo al pasar el mouse
-                            },
-                        }),
-                        input: (provided) => ({
-                            ...provided,
-                            color: '#fff',  // Establecer el color del texto a blanco
-                        }),
-                    }}
+                    onChange={(e) => handleCategoryChange(e.value)}
+                    placeholder="Selecciona un género"
+                    maxSelectedLabels={3} 
+                    className="w-full md:w-20rem"
+                    optionLabel="label"  // Especifica el label para mostrar
+                    filterBy="label"
+                    filter
+                    showClear={true}
+                    panelClassName="multiselect-exp"
+                    selectedItemsLabel={`${selectedCategories.length} géneros seleccionados`}
+                    emptyFilterMessage="No se encontraron resultados"
                 />
+
             </div>
 
             <div className="favoritos">
