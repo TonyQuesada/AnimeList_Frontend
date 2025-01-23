@@ -30,8 +30,13 @@ const Navbar = () => {
     }, [location]);
 
     useEffect(() => {
-        setImage(user.profile_image);
+        if (user.profile_image) {
+            setImage(`${user.profile_image}?${new Date().getTime()}`);
+        } else {
+            setImage('https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png');
+        }
     }, [user.profile_image]);
+    
         
     if (!user) {
         return null;

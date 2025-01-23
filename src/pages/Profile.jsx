@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext, useRef  } from 'react';
+import React, { useEffect, useState, useContext  } from 'react';
 import axios from 'axios';
 import { UserContext } from '../context/UserContext';
 import { toast } from 'react-toastify'; // Importar Toastify
@@ -8,7 +8,6 @@ import '../assets/styles/profile.css';
 import { BiHide } from "react-icons/bi";
 import { BiShowAlt } from "react-icons/bi";
 import { FaPencilAlt } from "react-icons/fa";
-import ReactCrop from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css'; 
 
 const Profile = () => {
