@@ -1,23 +1,47 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     
-    const [profileImage, setProfileImage] = useState(null); // Estado global de la imagen
-
     const [user, setUser] = useState(() => {
         const storedUser = localStorage.getItem("user");
-        if (storedUser) {
-            const parsedUser = JSON.parse(storedUser);
-            if (parsedUser.profile_image) {
-                // Asegúrate de que la imagen tenga un cache buster si existe
-                parsedUser.profile_image = `${parsedUser.profile_image}?t=${Date.now()}`;
+        return storedUser ? JSON.parse(storedUser) : null;
+    });
+    const [profileImage, setProfileImage] = useState(null);
+
+    // Llama al servidor para obtener la imagen de perfil más actual
+    const fetchProfileImage = async (userId) => {
+        try {
+            const response = await fetch(`/Users/${userId}/profile-image`);
+            if (response.ok) {
+                const data = await response.json();
+                return data.profile_image; // Asume que la respuesta tiene la propiedad profile_image
             }
-            return parsedUser;
+        } catch (error) {
+            console.error("Error fetching profile image:", error);
         }
         return null;
-    });
+    };
+
+    // Verifica si la imagen de perfil debe ser actualizada
+    const updateProfileImage = async () => {
+        if (user && user.id) {
+            const newImage = await fetchProfileImage(user.id);
+            if (newImage && newImage !== profileImage) {
+                setProfileImage(newImage); // Actualiza la imagen de perfil
+                setUser((prevUser) => ({ ...prevUser, profile_image: newImage })); // Actualiza el usuario en el estado
+                localStorage.setItem("user", JSON.stringify({ ...user, profile_image: newImage })); // Actualiza en localStorage
+            }
+        }
+    };
+
+    // Llama a updateProfileImage cada vez que el usuario se cargue o se actualice
+    useEffect(() => {
+        if (user) {
+            updateProfileImage();
+        }
+    }, [user]);
 
     const login = (userData) => {
         setUser(userData);
@@ -27,14 +51,6 @@ export const UserProvider = ({ children }) => {
     const logout = () => {
         setUser(null);
         localStorage.removeItem("user");
-    };
-
-    const updateProfileImage = (newImage) => {
-        // Usar un hash o timestamp único para la imagen
-        const updatedImage = `${newImage}?userId=${user.id}&t=${Date.now()}`;
-        setProfileImage(updatedImage);
-        setUser((prevUser) => ({ ...prevUser, profile_image: updatedImage }));
-        localStorage.setItem("user", JSON.stringify({ ...user, profile_image: updatedImage }));
     };
 
     return (
