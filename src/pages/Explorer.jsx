@@ -383,7 +383,7 @@ const Explorer = () => {
                                 <img src={anime.images.jpg.large_image_url} alt={anime.title} />
                             )}
 
-                            <div class="favorito-contenido">
+                            <div className="favorito-contenido">
                                 <h2>{anime.title ? anime.title : "Título no disponible"}</h2>
                                 <p>{anime.synopsis ? anime.synopsis : "Sinopsis no disponible"}</p>
 

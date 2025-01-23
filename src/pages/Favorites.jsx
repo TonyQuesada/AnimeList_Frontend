@@ -258,7 +258,7 @@ const Favorites = () => {
                     <div className="favorito" key={favorito.anime_id}>
                         {favorito.image_url && <img src={favorito.image_url} alt={favorito.title} />}
                         
-                        <div class="favorito-contenido">
+                        <div className="favorito-contenido">
                             <h2>{favorito.title}</h2>
                             <p>{favorito.description}</p>
                             
