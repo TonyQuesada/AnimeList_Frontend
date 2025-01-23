@@ -105,7 +105,7 @@ const Explorer = () => {
 
         try { 
             // Construir la URL de la API correctamente
-            const baseUrl = 'https://api.jikan.moe/v4/anime';
+            let baseUrl = 'https://api.jikan.moe/v4';
 
             const queryParams = new URLSearchParams({
                 page: page,
@@ -116,15 +116,18 @@ const Explorer = () => {
             });
 
             if (search.length > 0) {
+                baseUrl += '/anime';
                 queryParams.append('q', search);
             }
 
             if (selectedCategories.length > 0) {
+                baseUrl += '/anime';
                 queryParams.append('genres', selectedCategories.join(','));
             }
             
             // Si no hay búsqueda ni categorías seleccionadas, agregar los parámetros por defecto
             if (search.length === 0 && selectedCategories.length === 0) {
+                baseUrl += '/seasons/now';
                 queryParams.append('status', 'airing');  // Agregar status por defecto
                 queryParams.append('sfw', true);          // Agregar sfw por defecto
             }
