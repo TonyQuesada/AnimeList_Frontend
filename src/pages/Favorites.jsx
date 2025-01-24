@@ -231,8 +231,8 @@ const Favorites = () => {
                     className="search-input"
                 />
 
-                {/* Select de estado */}
                 <div className='multiselect-container fav'>
+                    {/* Select de estado */}
                     <MultiSelect
                         value={statusFilter}
                         options={statuses.map((status) => ({
@@ -249,25 +249,23 @@ const Favorites = () => {
                         selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${statusFilter.length} estados`}
                         emptyFilterMessage="No se encontraron resultados"
                     />
-                </div>
-
-                {/* Nuevo select de ordenación */}
-                <div className='multiselect-container fav'>
-                <Dropdown
-                    value={sortOrder}  // El valor seleccionado
-                    options={[
-                        { label: "Nombre", value: "name" },
-                        { label: "Fecha de agregado", value: "dateAdded" },
-                    ]}
-                    onChange={(e) => handleSortChange(e.value)}  // Cuando se selecciona una nueva opción
-                    placeholder={isMobile ? `<IoFilter className="filter-exp" />` : "Ordenar"}
-                    className="w-full md:w-20rem"
-                    optionLabel="label"
-                    panelClassName="multiselect-fav"
-                    showClear={isMobile ? false : true}
-                    valueTemplate={isMobile ? <IoFilter className="filter-exp" /> : sortOrder.label }
-                    emptyFilterMessage="No se encontraron resultados"
-                />
+                    
+                    {/* Nuevo select de ordenación */}
+                    <Dropdown
+                        value={sortOrder}  // El valor seleccionado
+                        options={[
+                            { label: "Nombre", value: "name" },
+                            { label: "Fecha de agregado", value: "dateAdded" },
+                        ]}
+                        onChange={(e) => handleSortChange(e.value)}  // Cuando se selecciona una nueva opción
+                        placeholder={isMobile ? `<IoFilter className="filter-exp" />` : "Ordenar"}
+                        className="w-full md:w-20rem"
+                        optionLabel="label"
+                        panelClassName="multiselect-fav"
+                        showClear={isMobile ? false : true}
+                        valueTemplate={isMobile ? <IoFilter className="filter-exp" /> : sortOrder.label }
+                        emptyFilterMessage="No se encontraron resultados"
+                    />
                 </div>
             </div>
 
