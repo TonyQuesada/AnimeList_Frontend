@@ -351,18 +351,30 @@ body {
 }
 
 /* Select de generos */
-.p-multiselect{
+.p-multiselect, .p-dropdown{
     border-color: var(--color3) !important; /* Borde al enfocar */
     margin-right: 10px; /* Añadir espacio entre el texto y el botón Clear */    
 }
 
-.p-multiselect:focus-within{
+.p-multiselect:focus-within, .p-dropdown:focus-within{
     border-color: var(--color4) !important; /* Borde al enfocar */
     box-shadow: 0 0 5px var(--color4) !important; /* Sombra al enfocar */
 }
 
-.p-multiselect-clear-icon {
+.p-multiselect-clear-icon{
     right: 33px !important;
+}
+
+.multiselect-exp .p-multiselect-header .p-link{
+    display: none;
+}
+
+.multiselect-fav .p-multiselect-header{
+    display: none;
+}
+
+.p-dropdown-clear-icon{
+    display: none;
 }
 
 /* Ajuste para pantallas pequeñas */
@@ -433,7 +445,7 @@ body {
         max-width: 100px;
     }
         
-    .p-multiselect-trigger {
+    .p-multiselect-trigger, .p-dropdown-trigger {
         display: none;
     }
 

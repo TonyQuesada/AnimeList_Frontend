@@ -132,8 +132,9 @@ const Explorer = () => {
                 queryParams.append('status', 'airing');  // Agregar status por defecto                
             }
 
-            queryParams.append('sfw', !user.sfw ? true : ''); // Agregar sfw por defecto
-            console.log('SFW:', user.sfw);
+            if (user.sfw === 1) {
+                queryParams.append('sfw', true);
+            }
 
             // Realizar la solicitud con la URL construida
             const res = await axios.get(`${baseUrl}?${queryParams.toString()}`);
@@ -330,7 +331,7 @@ const Explorer = () => {
                         className="w-full md:w-20rem"
                         optionLabel="label"  // Especifica el label para mostrar
                         filterBy="label"
-                        filter
+                        filter                        
                         showClear={isMobile ? false : true}
                         panelClassName="multiselect-exp"
                         selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${selectedCategories.length} géneros seleccionados`}

@@ -74,7 +74,6 @@ export const UserProvider = ({ children }) => {
     useEffect(() => {
         if (user) {
             updateProfileImage();
-            //updateUser();
         }
     }, [user]);
 

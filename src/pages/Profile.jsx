@@ -13,7 +13,7 @@ import 'react-image-crop/dist/ReactCrop.css';
 
 const Profile = () => {
 
-  const { user, updateProfileImage } = useContext(UserContext);
+  const { user, updateProfileImage, updateUser } = useContext(UserContext);
   const API = process.env.REACT_APP_BACKEND_URL;
 
   const [userData, setUserData] = useState(null);
@@ -90,7 +90,7 @@ const Profile = () => {
       await axios.put(`${API}/users/AdultContent/${user.user_id}`, {
         sfw: newIsAdultContent ? 0 : 1, // Si es 'true', actualizar 'sfw' a 0, si es 'false', a 1
       });
-  
+      updateUser(); // Actualizar los datos del usuario
       toast.success('Preferencias de contenido actualizadas'); // Mensaje de éxito
   
     } catch (err) {
@@ -267,7 +267,7 @@ const Profile = () => {
               style={{ display: 'none' }} // Ocultamos el checkbox visualmente
             />
             <span className="checkbox-text">
-              <MdNoAdultContent className="icon-adult" /> Contenido para adultos
+              <MdNoAdultContent className="icon-adult" /> Contenido sensible
               <span
                 className={`checkbox-icon ${isAdultContent ? 'checked' : 'unchecked'}`}
               >

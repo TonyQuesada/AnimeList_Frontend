@@ -3,8 +3,11 @@ import axios from 'axios';
 import { toast } from 'react-toastify'; // Importar Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
-import { FaTrashAlt } from 'react-icons/fa';
+import { FaTrashAlt, FaFilter } from 'react-icons/fa';
+import { IoFilter } from "react-icons/io5";
 import '../assets/styles/style.css';
+import { MultiSelect } from 'primereact/multiselect';
+import { Dropdown } from 'primereact/dropdown';
 
 const Favorites = () => {
 
@@ -13,7 +16,7 @@ const Favorites = () => {
     
     const [favorites, setFavorites] = useState([]);
     const [statuses, setStatuses] = useState([]);
-    const [statusFilter, setStatusFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState([]);
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(Infinity);
@@ -154,13 +157,13 @@ const Favorites = () => {
     };    
 
     const handleSearchChange = (e) => { setSearch(e.target.value); }; // Handle filtering by title
-    const handleStatusChange = (e) => { setStatusFilter(e.target.value); }; // Handle status filter change
-    const handleSortChange = (e) => { setSortOrder(e.target.value); }; // Manejar cambio en el select de ordenación
+    const handleStatusChange = (e) => { setStatusFilter(e.value); }; // Handle status filter change
+    const handleSortChange = (value) => { setSortOrder(value); }; // Manejar cambio en el select de ordenación
 
     // Filter favorites based on title and status
     const filteredData = favorites.filter(favorito => {
         const matchesTitle = favorito.title.toLowerCase().includes(search.toLowerCase());
-        const matchesStatus = statusFilter ? favorito.status_id === parseInt(statusFilter) : true;
+        const matchesStatus = statusFilter.length === 0 || statusFilter.includes(favorito.status_id);
         return matchesTitle && matchesStatus;
     });
 
@@ -168,25 +171,17 @@ const Favorites = () => {
     const filteredAndSortedData = filteredData.sort((a, b) => {
         if (sortOrder === 'name') {
             return a.title.localeCompare(b.title); // Ordenar por nombre (alfabéticamente)
-        } else if (sortOrder === 'dateAdded') {
-            // Ordenar primero por fecha
-            const dateComparison = new Date(b.date_added) - new Date(a.date_added);
-            
-            // Si las fechas son iguales, ordenar por nombre
-            if (dateComparison === 0) {
+        } else if (sortOrder === 'dateAdded') {            
+            const dateComparison = new Date(b.date_added) - new Date(a.date_added); // Ordenar primero por fecha            
+            if (dateComparison === 0) { // Si las fechas son iguales, ordenar por nombre
                 return a.title.localeCompare(b.title); // Si las fechas son iguales, ordenar alfabéticamente por nombre
-            }
-            
+            }            
             return dateComparison; // Si no, devolver el resultado de la comparación de fecha
-        } else {
-            // Ordenar primero por fecha
-            const dateComparison = new Date(b.date_added) - new Date(a.date_added);
-            
-            // Si las fechas son iguales, ordenar por nombre
-            if (dateComparison === 0) {
+        } else {            
+            const dateComparison = new Date(b.date_added) - new Date(a.date_added); // Ordenar primero por fecha
+            if (dateComparison === 0) { // Si las fechas son iguales, ordenar por nombre
                 return a.title.localeCompare(b.title); // Si las fechas son iguales, ordenar alfabéticamente por nombre
-            }
-            
+            }            
             return dateComparison; // Si no, devolver el resultado de la comparación de fecha
         }
     });
@@ -221,6 +216,8 @@ const Favorites = () => {
         return pages;
     };
 
+    const isMobile = window.innerWidth <= 768;
+
     return (
         <div>
 
@@ -234,23 +231,44 @@ const Favorites = () => {
                     className="search-input"
                 />
 
-                <select onChange={handleStatusChange} value={statusFilter} className="status-select">
-                    <option value="" hidden>Estado</option>
-                    <option value="">Todos</option>
-                    {statuses.map((status) => (
-                        <option key={status.status_id} value={status.status_id}>
-                            {status.status_name}
-                        </option>
-                    ))}
-                </select>
+                {/* Select de estado */}
+                <div className='multiselect-container fav'>
+                    <MultiSelect
+                        value={statusFilter}
+                        options={statuses.map((status) => ({
+                            label: status.status_name,
+                            value: status.status_id
+                        }))}
+                        onChange={(e) => handleStatusChange(e)}
+                        placeholder= {isMobile ? <FaFilter className='filter-exp' /> : "Estado"}
+                        maxSelectedLabels={isMobile ? 0 : 1} 
+                        className="w-full md:w-20rem"
+                        optionLabel="label"  // Especifica el label para mostrar
+                        showClear={isMobile ? false : true}
+                        panelClassName="multiselect-fav"
+                        selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${statusFilter.length} estados`}
+                        emptyFilterMessage="No se encontraron resultados"
+                    />
+                </div>
 
                 {/* Nuevo select de ordenación */}
-                <select onChange={handleSortChange} value={sortOrder} className="sort-select">
-                    <option value="" hidden>Ordenar por</option>
-                    <option value="name">Nombre</option>
-                    <option value="dateAdded">Fecha de agregado</option>
-                </select>
-
+                <div className='multiselect-container fav'>
+                <Dropdown
+                    value={sortOrder}  // El valor seleccionado
+                    options={[
+                        { label: "Nombre", value: "name" },
+                        { label: "Fecha de agregado", value: "dateAdded" },
+                    ]}
+                    onChange={(e) => handleSortChange(e.value)}  // Cuando se selecciona una nueva opción
+                    placeholder={isMobile ? `<IoFilter className="filter-exp" />` : "Ordenar"}
+                    className="w-full md:w-20rem"
+                    optionLabel="label"
+                    panelClassName="multiselect-fav"
+                    showClear={isMobile ? false : true}
+                    valueTemplate={isMobile ? <IoFilter className="filter-exp" /> : sortOrder.label }
+                    emptyFilterMessage="No se encontraron resultados"
+                />
+                </div>
             </div>
 
             <div className="favoritos">

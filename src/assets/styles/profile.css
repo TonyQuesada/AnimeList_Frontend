@@ -120,45 +120,46 @@ input:disabled, select:disabled {
 }
 
 .image-container {
-position: relative;
-width: 150px; /* Ajusta según el tamaño de tu imagen */
-height: 150px; /* Ajusta según el tamaño de tu imagen */  
-margin-left: auto;
-margin-right: auto;
+  position: relative;
+  width: 150px; /* Ajusta según el tamaño de tu imagen */
+  height: 150px; /* Ajusta según el tamaño de tu imagen */  
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .profile-image {
-width: 100%;
-height: 100%;
-object-fit: cover;
-border-radius: 50%; /* Para hacerlo circular */
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%; /* Para hacerlo circular */
 }
 
 .edit-icon {
-position: absolute;
-bottom: -10px; 
-right: 2px;
-font-size: 24px;
-color: white;
-background-color: var(--color1);
-padding: 10.5px;
-border-radius: 100%;
-cursor: pointer;
+  position: absolute;
+  bottom: -10px; 
+  right: 2px;
+  font-size: 24px;
+  color: white;
+  background-color: var(--color1);
+  padding: 10.5px;
+  border-radius: 100%;
+  cursor: pointer;
 }
 
 .edit-icon:hover {
-background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.7);
 }
+
 
 .checkbox-container{
   border-radius: 0.5%;
   border: 1px solid var(--color3);
-  padding: 1%;
+  padding: 0.5%;
 }
 
 .checkbox-label {
   align-items: center;
-  font-size: 1.1em;
+  font-size: 1.3em;
 }
 
 .checkbox-text {  
@@ -172,8 +173,9 @@ background-color: rgba(0, 0, 0, 0.7);
   align-items: center;
   cursor: pointer; /* Cambiar el cursor a mano para indicar que es clickeable */
   
-  margin-right: 20px; /* Espaciado entre el icono y el texto */
+  margin: 6px; /* Espaciado entre el icono y el texto */
   font-size: 3rem;
+  padding: 1%;
 }
 
 .checkbox-icon.checked {
@@ -185,9 +187,10 @@ background-color: rgba(0, 0, 0, 0.7);
 }
 
 .icon-adult {
-  margin-right: 8px; /* Espaciado entre el icono y el texto */
+  margin: 6px; /* Espaciado entre el icono y el texto */
   color: var(--color4); /* Color de React */
-  font-size: 5rem;
+  font-size: 4rem;
+  padding: 1%;
 }
 
 
