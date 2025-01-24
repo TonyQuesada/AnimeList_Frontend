@@ -217,31 +217,6 @@ body {
     margin: 0 5px;
 }
 
-/* Contenedor para el select y el botón */
-.status-container {
-    display: flex;
-    justify-content: center;
-    width: 100%; /* Asegúrate de que el contenedor ocupe todo el ancho disponible */
-    gap: 10px; /* Espacio entre los elementos */
-
-    margin-top: auto; /* Empuja el contenedor hacia la parte inferior de la tarjeta */
-}
-
-/* Estilos para el select */
-.status-select {
-    padding: 10px;
-    border-radius: 5px;
-    border: 1px solid var(--color3);
-    background-color: var(--color2);
-    color: white;
-    width: 100%; /* Puedes ajustarlo según tu necesidad */
-    transition: background-color 0.3s, border 0.3s;
-}
-
-.status-select:hover {
-    border-color: var(--color4);
-}
-
 /* Estilos para el botón de eliminar */
 .delete-btn, .success-btn, .delete-btn-fav {
     border: none;
@@ -382,6 +357,32 @@ body {
     display: none;
 }
 
+/* Contenedor para el select y el botón */
+.status-container {
+    display: flex;
+    justify-content: center;
+    width: 100%; /* Asegúrate de que el contenedor ocupe todo el ancho disponible */
+    text-align: left;
+    margin: 0px;
+}
+
+/* Estilos para el select */
+.status-dropdown{
+    width: 75%; /* Puedes ajustarlo según tu necesidad */
+    margin: 0px;
+    margin-right: 5px;
+}
+
+.status-dropdown .p-dropdown-label{
+    font-size: small;
+}
+.status-dropdown .p-dropdown-trigger{
+    width: 25px;
+    margin-right: 5px;
+}
+
+
+
 /* Ajuste para pantallas pequeñas */
 @media (max-width: 768px) {    
 
@@ -420,14 +421,6 @@ body {
     .favorito p {
         font-size: 0.9em;
     }
-
-    .status-container {
-        justify-content: flex-end;
-    }
-    
-    .status-select {
-        height: 100%; /* El select se adapta a pantallas más pequeñas */
-    }
     
     .delete-btn, .success-btn{
         border-radius: 3%;
@@ -461,5 +454,25 @@ body {
     .p-hidden-accessible input{
         margin: 0;
     }
+
+    /* Estilos para el select */
+    .status-container {
+        justify-content: flex-end;
+    }
+    
+    .status-dropdown{
+        width: 100%; /* Puedes ajustarlo según tu necesidad */
+        margin-right: 10px;
+    }
+
+    .status-dropdown .p-dropdown-label{
+        font-size: 1rem;
+    }
+
+    .status-dropdown .p-dropdown-trigger{
+        display: inline-block;
+        margin-top: 0.8rem;
+    }
     
 }
+

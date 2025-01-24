@@ -249,7 +249,7 @@ const Favorites = () => {
                         selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${statusFilter.length} estados`}
                         emptyFilterMessage="No se encontraron resultados"
                     />
-                    
+
                     {/* Nuevo select de ordenación */}
                     <Dropdown
                         value={sortOrder}  // El valor seleccionado
@@ -280,18 +280,17 @@ const Favorites = () => {
                             
                             <div className="status-container">
 
-                                {/* Select para cambiar el estado */}
-                                <select
-                                    className="status-select"
-                                    value={favorito.status_id}
-                                    onChange={(e) => handleStatusChangeFavorite(favorito.anime_id, parseInt(e.target.value))}
-                                >
-                                    {statuses.map((status) => (
-                                        <option key={status.status_id} value={status.status_id}>
-                                            {status.status_name}
-                                        </option>
-                                    ))}
-                                </select>
+                                {/* Select para cambiar el estado */}                                
+                                <Dropdown
+                                    value={favorito.status_id} // El valor seleccionado
+                                    options={statuses.map((status) => ({
+                                        label: status.status_name,
+                                        value: status.status_id,
+                                    }))} // Opciones del dropdown
+                                    onChange={(e) => handleStatusChangeFavorite(favorito.anime_id, parseInt(e.value)) } // Evento cuando cambie la selección
+                                    className="w-full md:w-20rem status-dropdown" // Clases personalizadas
+                                    panelClassName="dropdown-panel" // Panel de opciones
+                                />
 
                                 {/* Botón de eliminar favorito */}
                                 <button
