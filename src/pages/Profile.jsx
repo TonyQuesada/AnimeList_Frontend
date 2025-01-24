@@ -85,7 +85,7 @@ const Profile = () => {
   
     // Actualizar la base de datos cuando se cambia el estado
     try {
-      await axios.put(`${API}/users/AdultContent${user.user_id}`, {
+      await axios.put(`${API}/users/AdultContent/${user.user_id}`, {
         sfw: newIsAdultContent ? 0 : 1, // Si es 'true', actualizar 'sfw' a 0, si es 'false', a 1
       });
   
