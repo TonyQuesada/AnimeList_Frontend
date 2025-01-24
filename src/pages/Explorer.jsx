@@ -3,7 +3,7 @@ import axios from 'axios';
 import { toast } from 'react-toastify'; // Importar Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
-import { FaTrashAlt, FaRegHeart } from 'react-icons/fa';
+import { FaTrashAlt, FaRegHeart, FaFilter  } from 'react-icons/fa';
 import '../assets/styles/style.css';
 // import { MultiSelect } from 'react-multi-select-component';
 import { MultiSelect } from 'primereact/multiselect';
@@ -300,6 +300,8 @@ const Explorer = () => {
         return pages;
     };
     
+    const isMobile = window.innerWidth <= 768;
+
     return (
         <div>
             <div className="filters">
@@ -313,25 +315,27 @@ const Explorer = () => {
 
                 <button onClick={handleSearchClick} className="search-button">Buscar</button>
 
-                {/* Select para categorías múltiples */}                       
-                <MultiSelect
-                    value={selectedCategories}
-                    options={genres.map((genre) => ({
-                        label: genre.name,
-                        value: genre.id
-                    }))}
-                    onChange={(e) => handleCategoryChange(e.value)}
-                    placeholder="Selecciona un género"
-                    maxSelectedLabels={3} 
-                    className="w-full md:w-20rem"
-                    optionLabel="label"  // Especifica el label para mostrar
-                    filterBy="label"
-                    filter
-                    showClear={true}
-                    panelClassName="multiselect-exp"
-                    selectedItemsLabel={`${selectedCategories.length} géneros seleccionados`}
-                    emptyFilterMessage="No se encontraron resultados"
-                />
+                {/* Select para categorías múltiples */}     
+                <div className='multiselect-container'>
+                    <MultiSelect
+                        value={selectedCategories}
+                        options={genres.map((genre) => ({
+                            label: genre.name,
+                            value: genre.id
+                        }))}
+                        onChange={(e) => handleCategoryChange(e.value)}
+                        placeholder= {isMobile ? <FaFilter className='filter-exp' /> : "Selecciona un género"}
+                        maxSelectedLabels={isMobile ? 0 : 3} 
+                        className="w-full md:w-20rem"
+                        optionLabel="label"  // Especifica el label para mostrar
+                        filterBy="label"
+                        filter
+                        showClear={isMobile ? false : true}
+                        panelClassName="multiselect-exp"
+                        selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${selectedCategories.length} géneros seleccionados`}
+                        emptyFilterMessage="No se encontraron resultados"
+                    />
+                </div>                  
 
             </div>
 

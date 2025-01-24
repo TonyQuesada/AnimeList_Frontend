@@ -42,10 +42,39 @@ export const UserProvider = ({ children }) => {
         }
     };
 
+    // Función para actualizar los datos completos del usuario
+    const fetchUpdatedUser = async (userId) => {
+        const API = process.env.REACT_APP_BACKEND_URL;
+        try {
+            const response = await fetch(`${API}/Users/${userId}`);
+            if (response.ok) {
+                const updatedUser = await response.json();
+                return updatedUser;
+            } else {
+                console.error("Error al obtener los datos del usuario:", response.status);
+            }
+        } catch (error) {
+            console.error("Error fetching updated user:", error);
+        }
+        return null;
+    };
+
+    // Función para actualizar los datos del usuario completo
+    const updateUser = async () => {
+        if (user && user.user_id) {
+            const updatedUser = await fetchUpdatedUser(user.user_id);
+            if (updatedUser) {
+                setUser(updatedUser); // Actualiza el usuario con los datos más recientes
+                localStorage.setItem("user", JSON.stringify(updatedUser)); // Actualiza en localStorage
+            }
+        }
+    };
+
     // Llama a updateProfileImage cada vez que el usuario se cargue o se actualice
     useEffect(() => {
         if (user) {
             updateProfileImage();
+            updateUser();
         }
     }, [user]);
 
@@ -60,7 +89,7 @@ export const UserProvider = ({ children }) => {
     };
 
     return (
-        <UserContext.Provider value={{ user, login, logout, updateProfileImage }}>
+        <UserContext.Provider value={{ user, login, logout, updateProfileImage, updateUser }}>
             {children}
         </UserContext.Provider>
     );

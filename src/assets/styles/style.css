@@ -101,6 +101,7 @@ body {
 }
 
 
+
 /* Favoritos */
 .favoritos {
     display: grid;
@@ -364,12 +365,6 @@ body {
     right: 33px !important;
 }
 
-
-
-
-
-
-
 /* Ajuste para pantallas pequeñas */
 @media (max-width: 768px) {    
 
@@ -430,13 +425,24 @@ body {
         font-size: 0.8rem;
         width: 95%; /* Asegúrate de que no ocupe mucho espacio */
         padding: 4px 10px ; /* Aún más compacto en móviles */
-        margin-top: -5px !important;
+        margin-top: 1rem !important;
+        margin-right: 0.7rem;
     }
 
     .logo {
         max-width: 100px;
     }
+        
+    .p-multiselect-trigger {
+        display: none;
+    }
+
+    .filter-exp{
+        margin-bottom: -2px;
+    }
+
+    .p-hidden-accessible input{
+        margin: 0;
+    }
     
 }
-
-

@@ -150,8 +150,54 @@ cursor: pointer;
 background-color: rgba(0, 0, 0, 0.7);
 }
 
+.checkbox-container{
+  border-radius: 0.5%;
+  border: 1px solid var(--color3);
+  padding: 1%;
+}
+
+.checkbox-label {
+  align-items: center;
+  font-size: 1.1em;
+}
+
+.checkbox-text {  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.checkbox-icon {
+  display: flex;
+  align-items: center;
+  cursor: pointer; /* Cambiar el cursor a mano para indicar que es clickeable */
+  
+  margin-right: 20px; /* Espaciado entre el icono y el texto */
+  font-size: 3rem;
+}
+
+.checkbox-icon.checked {
+  color: var(--green); /* Color del icono cuando está marcado */
+}
+
+.checkbox-icon.unchecked {
+  color: var(--red); /* Color del icono cuando no está marcado */
+}
+
+.icon-adult {
+  margin-right: 8px; /* Espaciado entre el icono y el texto */
+  color: var(--color4); /* Color de React */
+  font-size: 5rem;
+}
+
+
+@media (max-width: 768px) {
+  
+}
+
 @media (max-width: 660px) { 
   .profile-container {
       margin: 10px;
   }
 }
+

@@ -5,9 +5,10 @@ import { toast } from 'react-toastify'; // Importar Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import '../assets/styles/style.css';
 import '../assets/styles/profile.css';
-import { BiHide } from "react-icons/bi";
-import { BiShowAlt } from "react-icons/bi";
+import { BiHide, BiShowAlt } from "react-icons/bi";
 import { FaPencilAlt } from "react-icons/fa";
+import { FaCircleCheck, FaCircleXmark} from "react-icons/fa6";
+import { MdNoAdultContent } from "react-icons/md";
 import 'react-image-crop/dist/ReactCrop.css'; 
 
 const Profile = () => {
@@ -34,6 +35,7 @@ const Profile = () => {
   const [passwordError, setPasswordError] = useState('');
 
   const [image, setImage] = useState(null);
+  const [isAdultContent, setIsAdultContent] = useState(false);  // Estado para el checkbox de contenido para adultos
 
   useEffect(() => {
 
@@ -47,6 +49,14 @@ const Profile = () => {
           email: response.data.email
         });
         setStatus(response.data.status_id);
+
+        // Verificar el valor de la columna sfw
+        if (response.data.sfw === 0) {
+          setIsAdultContent(true); // Si es 0, marcar el checkbox
+        } else {
+          setIsAdultContent(false); // Si es 1, desmarcar el checkbox
+        }
+
       })
       .catch(err => {
         console.error("Error al cargar los datos del usuario:", err);
@@ -67,6 +77,24 @@ const Profile = () => {
   const handlePasswordChange = (e) => {
     setPasswordData({ ...passwordData, [e.target.name]: e.target.value });
     if (passwordError) setPasswordError(''); // Limpiar el error de la contraseña cuando el usuario la modifique
+  };
+
+  const handleCheckboxChange = async (e) => {
+    const newIsAdultContent = e.target.checked; // Obtener el nuevo valor del checkbox
+    setIsAdultContent(newIsAdultContent); // Actualizar el estado del checkbox
+  
+    // Actualizar la base de datos cuando se cambia el estado
+    try {
+      await axios.put(`${API}/users/AdultContent${user.user_id}`, {
+        sfw: newIsAdultContent ? 0 : 1, // Si es 'true', actualizar 'sfw' a 0, si es 'false', a 1
+      });
+  
+      toast.success('Preferencias de contenido actualizadas'); // Mensaje de éxito
+  
+    } catch (err) {
+      console.error("Error al actualizar preferencias de contenido:", err);
+      toast.error('Hubo un error al actualizar las preferencias de contenido'); // Mensaje de error
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -97,6 +125,7 @@ const Profile = () => {
             password: passwordData.password,
           });
         }
+
         setPasswordError(null);
         setError(null); // Limpiar cualquier mensaje de error
         toast.success('Perfil actualizado con éxito'); // Mostrar éxito con Toastify
@@ -140,7 +169,6 @@ const Profile = () => {
       console.error("Error al subir la imagen:", error.response?.data || error.message);
     }
   };
-
 
   if (!userData) return null;
 
@@ -226,6 +254,21 @@ const Profile = () => {
             </button>
           </div>
         </div>        
+
+        {/* Checkbox para contenido para adultos */}
+        <div className="form-group checkbox-container">
+          <label className="checkbox-label">
+            <span className="checkbox-text">
+              <MdNoAdultContent className="icon-adult" /> Contenido para adultos - {isAdultContent}
+              <span
+                className={`checkbox-icon ${isAdultContent ? 'checked' : 'unchecked'}`}
+                onClick={handleCheckboxChange} // Alternar el estado al hacer click
+              >
+                {isAdultContent ? <FaCircleCheck /> : <FaCircleXmark />}
+              </span>
+            </span>
+          </label>
+        </div>
 
         {passwordError && <div className="error-message">{passwordError}</div>}
         {error && <div className="error-message">{error}</div>}
