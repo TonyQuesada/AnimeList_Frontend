@@ -5,7 +5,6 @@ import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
 import { FaTrashAlt, FaRegHeart, FaFilter  } from 'react-icons/fa';
 import '../assets/styles/style.css';
-// import { MultiSelect } from 'react-multi-select-component';
 import { MultiSelect } from 'primereact/multiselect';
         
 
@@ -130,9 +129,11 @@ const Explorer = () => {
             // Si no hay búsqueda ni categorías seleccionadas, agregar los parámetros por defecto
             if (search.length === 0 && selectedCategories.length === 0) {
                 baseUrl += '/seasons/now';
-                queryParams.append('status', 'airing');  // Agregar status por defecto
-                queryParams.append('sfw', true);          // Agregar sfw por defecto
+                queryParams.append('status', 'airing');  // Agregar status por defecto                
             }
+
+            queryParams.append('sfw', !user.sfw ? true : ''); // Agregar sfw por defecto
+            console.log('SFW:', user.sfw);
 
             // Realizar la solicitud con la URL construida
             const res = await axios.get(`${baseUrl}?${queryParams.toString()}`);

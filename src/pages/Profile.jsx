@@ -20,7 +20,8 @@ const Profile = () => {
   const [formData, setFormData] = useState({
     fullname: '',
     username: '',
-    email: ''
+    email: '',
+    sfw: ''
   });
   const [status, setStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -46,7 +47,8 @@ const Profile = () => {
         setFormData({
           fullname: response.data.fullname,
           username: response.data.username,
-          email: response.data.email
+          email: response.data.email,
+          sfw: response.data.sfw
         });
         setStatus(response.data.status_id);
 
@@ -258,11 +260,16 @@ const Profile = () => {
         {/* Checkbox para contenido para adultos */}
         <div className="form-group checkbox-container">
           <label className="checkbox-label">
+            <input
+              type="checkbox"
+              checked={isAdultContent}
+              onChange={handleCheckboxChange} // Usar onChange para manejar el cambio del checkbox
+              style={{ display: 'none' }} // Ocultamos el checkbox visualmente
+            />
             <span className="checkbox-text">
-              <MdNoAdultContent className="icon-adult" /> Contenido para adultos - {isAdultContent}
+              <MdNoAdultContent className="icon-adult" /> Contenido para adultos
               <span
                 className={`checkbox-icon ${isAdultContent ? 'checked' : 'unchecked'}`}
-                onClick={handleCheckboxChange} // Alternar el estado al hacer click
               >
                 {isAdultContent ? <FaCircleCheck /> : <FaCircleXmark />}
               </span>
