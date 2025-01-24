@@ -1,0 +1,8 @@
+:root {
+    --webkit-tap-highlight-color: transparent !important;
+}
+
+a, button, input, textarea, select {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+}

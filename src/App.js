@@ -11,6 +11,7 @@ import { ToastContainer } from 'react-toastify';
 import { UserContext } from "./context/UserContext";
 import { PrimeReactProvider } from 'primereact/api';
 import "primereact/resources/themes/lara-dark-purple/theme.css";
+import "./assets/styles/global.css";
 
 const ProtectedRoute = ({ children }) => {
   const { user } = useContext(UserContext);

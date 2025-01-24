@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect } from "react";
-import axios from 'axios';
 import { Link, useLocation } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 import { IoMdLogOut } from "react-icons/io";
