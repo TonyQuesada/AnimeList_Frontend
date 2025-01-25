@@ -2,7 +2,8 @@
     --webkit-tap-highlight-color: transparent !important;
 }
 
-a, button, input, textarea, select {
+*, *::before, *::after {
     outline: none !important;
     -webkit-tap-highlight-color: transparent !important;
 }
+
