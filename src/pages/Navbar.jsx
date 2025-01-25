@@ -91,13 +91,12 @@ const Navbar = () => {
                         src={
                             profileImage ||
                             user?.profile_image ||
-                            "https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png"
+                            process.env.PROFILE_DEFAULT
                         }
                         alt="Perfil"
                         className="profile-image navbar-logo"
                         onError={(e) =>
-                            (e.target.src =
-                            "https://res.cloudinary.com/dpkl9nczj/image/upload/v1736823969/profile_oztcom.png")
+                            (e.target.src = process.env.PROFILE_DEFAULT)
                         }
                     />
                     <span>Perfil</span> {/* Texto siempre visible */}
