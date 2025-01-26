@@ -68,13 +68,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 5px;
+    margin: 0 10px ;
     padding: 5px;
+    gap: 10px;
 }
 
 .filters input, .filters button, .filters select {
     padding: 10px;
-    margin: 0 10px;
     border-radius: 5px;
     border: 1px solid var(--color3);
     background-color: var(--color2);
@@ -333,7 +333,6 @@ body {
 /* Select de generos */
 .p-multiselect, .p-dropdown{
     border-color: var(--color3) !important; /* Borde al enfocar */
-    margin-right: 10px; /* Añadir espacio entre el texto y el botón Clear */    
 }
 
 .p-multiselect:focus-within, .p-dropdown:focus-within{
@@ -368,7 +367,7 @@ body {
 
 /* Estilos para el select */
 .status-dropdown{
-    width: 75%; /* Puedes ajustarlo según tu necesidad */
+    width: 100%; /* Puedes ajustarlo según tu necesidad */
     margin: 0px;
     margin-right: 5px;
 }

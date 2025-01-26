@@ -148,8 +148,33 @@ const Explorer = () => {
                     ))
                 );
 
-                // Limitar la cantidad de animes a `itemsPerPage` después de filtrar duplicados
-                const paginatedAnimes = uniqueAnimes.slice(0, itemsPerPage);
+                // Ordenar los resultados si hay un término de búsqueda
+                let orderedAnimes = uniqueAnimes;
+                if (search.length > 0) {
+                    orderedAnimes = uniqueAnimes.sort((a, b) => {
+                        const getMatchScore = (anime) => {
+                            // Busca coincidencias en todos los títulos (Default, Japanese, English)
+                            const titles = anime.titles.map((t) => t.title.toLowerCase());
+                            const matches = titles.filter((t) => t.includes(search.toLowerCase()));
+                            return matches.length > 0 ? 1 : 0;
+                        };
+
+                        // Obtener puntuaciones para las coincidencias
+                        const aScore = getMatchScore(a);
+                        const bScore = getMatchScore(b);
+
+                        // Priorizar animes con coincidencias
+                        if (aScore !== bScore) return bScore - aScore;
+
+                        // Si ambos tienen el mismo score, ordenar alfabéticamente por título por defecto
+                        const aDefaultTitle = a.titles.find((t) => t.type === "Default")?.title || "";
+                        const bDefaultTitle = b.titles.find((t) => t.type === "Default")?.title || "";
+                        return aDefaultTitle.localeCompare(bDefaultTitle);
+                    });
+                }
+
+                // Limitar la cantidad de animes a `itemsPerPage`
+                const paginatedAnimes = orderedAnimes.slice(0, itemsPerPage);
 
                 // Actualizamos la lista de animes
                 setAnimeList(paginatedAnimes);
@@ -309,35 +334,34 @@ const Explorer = () => {
             <div className="filters">
                 <input
                     type="text"
-                    placeholder="Buscar animes..."
                     value={search}
                     onChange={handleSearchChange}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()} // Detecta Enter
+                    placeholder="Buscar animes..."
                     className="search-input"
                 />
 
                 <button onClick={handleSearchClick} className="search-button">Buscar</button>
 
-                {/* Select para categorías múltiples */}     
-                <div className='multiselect-container'>
-                    <MultiSelect
-                        value={selectedCategories}
-                        options={genres.map((genre) => ({
-                            label: genre.name,
-                            value: genre.id
-                        }))}
-                        onChange={(e) => handleCategoryChange(e.value)}
-                        placeholder= {isMobile ? <FaFilter className='filter-exp' /> : "Selecciona un género"}
-                        maxSelectedLabels={isMobile ? 0 : 3} 
-                        className="w-full md:w-20rem"
-                        optionLabel="label"  // Especifica el label para mostrar
-                        filterBy="label"
-                        filter                        
-                        showClear={isMobile ? false : true}
-                        panelClassName="multiselect-exp"
-                        selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${selectedCategories.length} géneros seleccionados`}
-                        emptyFilterMessage="No se encontraron resultados"
-                    />
-                </div>                  
+                {/* Select para categorías múltiples */}    
+                <MultiSelect
+                    value={selectedCategories}
+                    options={genres.map((genre) => ({
+                        label: genre.name,
+                        value: genre.id
+                    }))}
+                    onChange={(e) => handleCategoryChange(e.value)}
+                    placeholder= {isMobile ? <FaFilter className='filter-exp' /> : "Selecciona un género"}
+                    maxSelectedLabels={isMobile ? 0 : 3} 
+                    className="w-full md:w-20rem"
+                    optionLabel="label"  // Especifica el label para mostrar
+                    filterBy="label"
+                    filter                        
+                    showClear={isMobile ? false : true}
+                    panelClassName="multiselect-exp"
+                    selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${selectedCategories.length} géneros seleccionados`}
+                    emptyFilterMessage="No se encontraron resultados"
+                />                
 
             </div>
 
