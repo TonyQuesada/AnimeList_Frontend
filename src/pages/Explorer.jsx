@@ -101,8 +101,6 @@ const Explorer = () => {
 
     const fetchAnime = async (page = 1, selectedCategories = []) => {
 
-        let hola = 0;
-        
         // Limpiar datos anteriores antes de hacer la solicitud
         setAnimeList([]);
 
@@ -140,7 +138,7 @@ const Explorer = () => {
 
             // Realizar la solicitud con la URL construida
             const res = await axios.get(`${baseUrl}?${queryParams.toString()}`);
-            
+
             // Verificar si 'data' existe en la respuesta
             if (res.data && res.data.data) {
                 // Filtrar duplicados basado en mal_id
