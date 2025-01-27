@@ -137,7 +137,9 @@ const Explorer = () => {
             }
 
             // Realizar la solicitud con la URL construida
+            console.log(`${baseUrl}?${queryParams.toString()}`);
             const res = await axios.get(`${baseUrl}?${queryParams.toString()}`);
+            console.log(res.data.data);
 
             // Verificar si 'data' existe en la respuesta
             if (res.data && res.data.data) {
