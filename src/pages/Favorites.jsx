@@ -81,6 +81,18 @@ const Favorites = () => {
         return () => window.removeEventListener('resize', updateItemsPerPage); // Limpieza del evento
     }, []);    
 
+    // Mover la vista al tope al cambiar de página
+    useEffect(() => {
+        if (isMobile) { // Solo en dispositivos móviles
+            window.scrollTo({
+                top: 0,
+                left: 0,
+                behavior: 'auto' // Animación suave
+            });
+        }
+    }, [currentPage]);
+
+
     // Actualizar el estado del anime en la base de datos
     const handleStatusChangeFavorite = async (anime_id, newStatusId) => {
         try {
