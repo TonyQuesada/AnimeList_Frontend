@@ -100,6 +100,8 @@ const Explorer = () => {
     }, [user, logout]);
 
     const fetchAnime = async (page = 1, selectedCategories = []) => {
+
+        let hola = 0;
         
         // Limpiar datos anteriores antes de hacer la solicitud
         setAnimeList([]);
@@ -111,7 +113,7 @@ const Explorer = () => {
             const queryParams = new URLSearchParams({
                 page: page,
                 limit: 25,
-                order_by: 'start_date',
+                order_by: 'episodes',
                 sort: 'desc',
                 min_episodes: 1,
             });
@@ -129,7 +131,7 @@ const Explorer = () => {
             // Si no hay búsqueda ni categorías seleccionadas, agregar los parámetros por defecto
             if (search.length === 0 && selectedCategories.length === 0) {
                 baseUrl += '/seasons/now';
-                queryParams.append('status', 'airing');  // Agregar status por defecto                
+                queryParams.append('status', 'airing');  // Agregar status por defecto
             }
 
             if (user.sfw === 1) {
@@ -137,10 +139,8 @@ const Explorer = () => {
             }
 
             // Realizar la solicitud con la URL construida
-            console.log(`${baseUrl}?${queryParams.toString()}`);
             const res = await axios.get(`${baseUrl}?${queryParams.toString()}`);
-            console.log(res.data.data);
-
+            
             // Verificar si 'data' existe en la respuesta
             if (res.data && res.data.data) {
                 // Filtrar duplicados basado en mal_id
