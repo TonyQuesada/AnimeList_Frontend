@@ -1,9 +1,13 @@
 import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
-import { toast } from 'react-toastify';
+import { toast } from 'react-toastify'; // Importar Toastify
+import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
-
-import FavoritesTemplate from '../templates/FavoritesTemplate';
+import { FaTrashAlt, FaFilter } from 'react-icons/fa';
+import { IoFilter } from "react-icons/io5";
+import '../assets/styles/style.css';
+import { MultiSelect } from 'primereact/multiselect';
+import { Dropdown } from 'primereact/dropdown';
 
 const Favorites = () => {
 
@@ -16,8 +20,7 @@ const Favorites = () => {
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(Infinity);
-    const [sortOrder, setSortOrder] = useState('');
-    const isMobile = window.innerWidth <= 768;
+    const [sortOrder, setSortOrder] = useState(''); // Nuevo estado para ordenación
 
     useEffect(() => {
 
@@ -89,9 +92,6 @@ const Favorites = () => {
         }
     }, [currentPage]);
 
-    useEffect(() => {
-        setCurrentPage(1); // Resetear a la primera página cuando el filtro cambie
-    }, [search, statusFilter]);
 
     // Actualizar el estado del anime en la base de datos
     const handleStatusChangeFavorite = async (anime_id, newStatusId) => {
@@ -175,11 +175,8 @@ const Favorites = () => {
     // Filter favorites based on title and status
     const filteredData = favorites.filter(favorito => {
         const matchesTitle = favorito.title.toLowerCase().includes(search.toLowerCase());
-        const matchesTitleEnglish = favorito.title_english && favorito.title_english.toLowerCase().includes(search.toLowerCase());
         const matchesStatus = statusFilter.length === 0 || statusFilter.includes(favorito.status_id);
-    
-        // Buscamos en ambas columnas (title y title_english)
-        return (matchesTitle || matchesTitleEnglish) && matchesStatus;
+        return matchesTitle && matchesStatus;
     });
 
     // Filtrar y ordenar favoritos
@@ -231,24 +228,129 @@ const Favorites = () => {
         return pages;
     };
 
+    const isMobile = window.innerWidth <= 768;
+
     return (
-        <FavoritesTemplate 
-            statuses={statuses}
-            statusFilter={statusFilter}
-            search={search}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            sortOrder={sortOrder}
-            isMobile={isMobile}
-            handleSearchChange={handleSearchChange}
-            handleStatusChange={handleStatusChange}
-            handleSortChange={handleSortChange}
-            handleStatusChangeFavorite={handleStatusChangeFavorite}
-            confirmDeleteFavorite={confirmDeleteFavorite}
-            getPageNumbers={getPageNumbers}
-            currentItems={currentItems}
-            totalPages={totalPages}
-        />
+        <div>
+
+            <div className="filters">
+
+                <input
+                    type="text"
+                    placeholder="Buscar favoritos..."
+                    value={search}
+                    onChange={handleSearchChange}
+                    className="search-input"
+                />
+
+                {/* Select de estado */}
+                <MultiSelect
+                    value={statusFilter}
+                    options={statuses.map((status) => ({
+                        label: status.status_name,
+                        value: status.status_id
+                    }))}
+                    onChange={(e) => handleStatusChange(e)}
+                    placeholder= {isMobile ? <FaFilter className='filter-exp' /> : "Estado"}
+                    maxSelectedLabels={isMobile ? 0 : 1} 
+                    className="w-full md:w-20rem"
+                    optionLabel="label"  // Especifica el label para mostrar
+                    showClear={isMobile ? false : true}
+                    panelClassName="multiselect-fav"
+                    selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${statusFilter.length} estados`}
+                    emptyFilterMessage="No se encontraron resultados"
+                />
+
+                {/* Nuevo select de ordenación */}
+                <Dropdown
+                    value={sortOrder}  // El valor seleccionado
+                    options={[
+                        { label: "Nombre", value: "name" },
+                        { label: "Fecha de agregado", value: "dateAdded" },
+                    ]}
+                    onChange={(e) => handleSortChange(e.value)}  // Cuando se selecciona una nueva opción
+                    placeholder={isMobile ? `<IoFilter className="filter-exp" />` : "Ordenar"}
+                    className="w-full md:w-20rem"
+                    optionLabel="label"
+                    panelClassName="multiselect-fav"
+                    showClear={isMobile ? false : true}
+                    valueTemplate={isMobile ? <IoFilter className="filter-exp" /> : sortOrder.label }
+                    emptyFilterMessage="No se encontraron resultados"
+                />
+            </div>
+
+            <div className="favoritos">
+                {currentItems.map((favorito) => (
+                    <div className="favorito" key={favorito.anime_id}>
+                        {favorito.image_url && <img src={favorito.image_url} alt={favorito.title} />}
+                        
+                        <div className="favorito-contenido">
+                            <h2>{favorito.title}</h2>
+                            <p>{favorito.description}</p>
+                            
+                            <div className="status-container">
+
+                                {/* Select para cambiar el estado */}
+                                <Dropdown
+                                    value={favorito.status_id} // El valor seleccionado
+                                    options={statuses.map((status) => ({
+                                        label: status.status_name,
+                                        value: status.status_id,
+                                    }))} // Opciones del dropdown
+                                    onChange={(e) => handleStatusChangeFavorite(favorito.anime_id, parseInt(e.value)) } // Evento cuando cambie la selección
+                                    className="w-full md:w-20rem status-dropdown" // Clases personalizadas
+                                    panelClassName="dropdown-panel" // Panel de opciones
+                                />
+
+                                {/* Botón de eliminar favorito */}
+                                <button
+                                    className="delete-btn-fav"
+                                    onClick={() => confirmDeleteFavorite(favorito.anime_id)}
+                                >
+                                    <FaTrashAlt className="fav-icon"/>
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                ))}
+            </div>
+
+            {/* Paginación */}
+            <div className="pagination">
+                {/* Botón de "Anterior" */}
+                <button 
+                    hidden={currentPage === 1 || totalPages === 0}
+                    onClick={() => setCurrentPage(currentPage - 1)}
+                >
+                    &lt;&lt;
+                </button>
+
+                {/* Números de páginas */}
+                {getPageNumbers().map((page, index) => (
+                    page === "..." ? (
+                        <span key={index} className="dots">...</span>
+                    ) : (
+                        <button
+                            key={index}
+                            onClick={() => setCurrentPage(page)}
+                            className={page === currentPage ? "active" : ""}
+                        >
+                            {page}
+                        </button>
+                    )
+                ))}
+
+                {/* Botón de "Siguiente" */}
+                <button 
+                    hidden={currentPage === totalPages || totalPages === 0}
+                    onClick={() => setCurrentPage(currentPage + 1)}
+                >
+                    &gt;&gt;
+                </button>
+            </div>
+
+        </div>
     );
 };
 

@@ -230,6 +230,7 @@ const Explorer = () => {
                 user_id: user.user_id,
                 status_id: "0",
                 year: anime.aired?.prop?.from?.year || "No definido",
+                title_english: anime.title_english || "Título no disponible",
             }).catch(err => {
                 console.error("Error en la solicitud axios:", err.response || err.message);
             });
