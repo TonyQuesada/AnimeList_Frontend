@@ -14,18 +14,23 @@ const Favorites = () => {
     const [statuses, setStatuses] = useState([]);
     const [statusFilter, setStatusFilter] = useState([]);
     const [search, setSearch] = useState('');
+    const [typeShow, setTypeShow] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(Infinity);
     const [sortOrder, setSortOrder] = useState('');
     const isMobile = window.innerWidth <= 768;
+    
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [typeShow]);
 
     useEffect(() => {
 
         if (!user) { logout(); }
 
         const fetchAllFavorites = async () => {
-            try {
-                const res = await axios.get(`${API}/Favorites?user_id=${user.user_id}`);                
+            try {  
+                const res = await axios.get(`${API}/Favorites?user_id=${user.user_id}&type=${typeShow}`);        
                 setFavorites(res.data);
             } catch (err) {
                 console.log(err);
@@ -43,7 +48,8 @@ const Favorites = () => {
 
         fetchAllFavorites();
         fetchStatuses();
-    }, [user, logout]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user, logout, typeShow]);
 
     // Detectar cambio de tamaño de la ventana y ajustar el límite de elementos por página
     useEffect(() => {
@@ -87,6 +93,7 @@ const Favorites = () => {
                 behavior: 'auto' // Animación suave
             });
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
 
     useEffect(() => {
@@ -99,6 +106,7 @@ const Favorites = () => {
             await axios.put(`${API}/Favorites/Update/${anime_id}`, {
                 user_id: user.user_id,
                 status_id: newStatusId,
+                type: typeShow === "manga" ? typeShow : "anime"
             });
 
             // Encuentra el anime en la lista local para obtener su título
@@ -106,7 +114,7 @@ const Favorites = () => {
 
             // Si no se encuentra, salimos
             if (!updatedAnime) {
-                console.error("Anime no encontrado en los favoritos locales");
+                console.error(`${typeShow === "manga" ? "Manga" : "Anime"} no encontrado en los favoritos locales`);
                 return;
             }
 
@@ -127,13 +135,25 @@ const Favorites = () => {
     const handleDeleteFavorite = async (anime_id) => {
         try {
             await axios.delete(`${API}/Favorites/${anime_id}`, {
-                data: { user_id: user.user_id },
+                data: { 
+                    user_id: user.user_id,                    
+                    type: typeShow === "manga" ? typeShow : "anime"
+                },
             });
 
             // Eliminar el anime de la lista localmente
             setFavorites(favorites.filter(fav => fav.anime_id !== anime_id));
+
+            // Obtener el título del anime o manga que se está eliminando
+            const animeToDelete = favorites.find(fav => fav.anime_id === anime_id);
+            const title = animeToDelete ? animeToDelete.title : "";
+
+            // Mostrar la alerta de éxito
+            toast.success(`El ${typeShow === "manga" ? typeShow : "anime"} "${title}" fue eliminado de favoritos`);
+
         } catch (err) {
             console.log(err);
+            toast.error(`Hubo un error al eliminar el ${typeShow === "manga" ? typeShow : "anime"} de favoritos`);
         }
     };
 
@@ -168,6 +188,7 @@ const Favorites = () => {
         );
     };    
 
+    const handleTypeChange = (value) => { setTypeShow(value); };
     const handleSearchChange = (e) => { setSearch(e.target.value); }; // Handle filtering by title
     const handleStatusChange = (e) => { setStatusFilter(e.value); }; // Handle status filter change
     const handleSortChange = (value) => { setSortOrder(value); }; // Manejar cambio en el select de ordenación
@@ -248,6 +269,8 @@ const Favorites = () => {
             getPageNumbers={getPageNumbers}
             currentItems={currentItems}
             totalPages={totalPages}
+            typeShow={typeShow}
+            handleTypeChange={handleTypeChange}
         />
     );
 };

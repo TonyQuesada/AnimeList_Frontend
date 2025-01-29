@@ -16,7 +16,7 @@ const Navbar = () => {
         // Establecer el título de la página basado en la ruta actual
         switch (location.pathname) {
             case "/Explorer":
-                setPageTitle("Explorar Animes");
+                setPageTitle("Explorar");
                 break;
             case "/Favorites":
                 setPageTitle("Favoritos");
@@ -49,13 +49,13 @@ const Navbar = () => {
                         <img src="/favicon.png" alt="Logo" className="navbar-logo" />
                     </Link>
                     <Link to="/Explorer" className="navbar-title-link" onClick={(e) => handleReload("/Explorer", e)}>
-                        <span className="navbar-title">Anime Library</span>
+                        <span className="navbar-title">Otaku Collection</span>
                     </Link>
                 </div>
 
                 <div className={`navbar-center ${menuOpen ? "open" : ""}`}>
                     <Link to="/Explorer" className="navbar-link" onClick={(e) => handleReload("/Explorer", e)}>
-                        Explorar Animes
+                        Explorar
                     </Link>
                     <Link to="/Favorites" className="navbar-link" onClick={(e) => handleReload("/Favorites", e)}>
                         Favoritos

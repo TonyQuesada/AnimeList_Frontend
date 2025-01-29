@@ -3,52 +3,26 @@ import axios from 'axios';
 import { toast } from 'react-toastify'; // Importar Toastify
 import 'react-toastify/dist/ReactToastify.css'; // Estilos de Toastify
 import { UserContext } from "../context/UserContext";
-import { FaTrashAlt, FaFilter } from 'react-icons/fa';
-import { IoFilter } from "react-icons/io5";
+import { FaTrashAlt, FaRegHeart, FaFilter  } from 'react-icons/fa';
 import '../assets/styles/style.css';
 import { MultiSelect } from 'primereact/multiselect';
-import { Dropdown } from 'primereact/dropdown';
+        
 
-const Favorites = () => {
+const Explorer = () => {
 
     const { user, logout } = useContext(UserContext);
     const API = process.env.REACT_APP_BACKEND_URL;
-    
+
+    const [animeList, setAnimeList] = useState([]);  // Lista de animes obtenidos
     const [favorites, setFavorites] = useState([]);
     const [statuses, setStatuses] = useState([]);
-    const [statusFilter, setStatusFilter] = useState([]);
-    const [search, setSearch] = useState('');
+    const [genres, setGenres] = useState([]);  // Estado para los géneros
+    const [search, setSearch] = useState('');  // Campo de búsqueda
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(Infinity);
-    const [sortOrder, setSortOrder] = useState(''); // Nuevo estado para ordenación
+    const [hasNextPage, setHasNextPage] = useState(false);  // Indica si hay más páginas
+    const [itemsPerPage, setItemsPerPage] = useState(Infinity);    
+    const [selectedCategories, setSelectedCategories] = useState([]); // Estado para categorías seleccionadas
 
-    useEffect(() => {
-
-        if (!user) { logout(); }
-
-        const fetchAllFavorites = async () => {
-            try {
-                const res = await axios.get(`${API}/Favorites?user_id=${user.user_id}`);                
-                setFavorites(res.data);
-            } catch (err) {
-                console.log(err);
-            }
-        };
-
-        const fetchStatuses = async () => {
-            try {
-                const res = await axios.get(`${API}/StatusesAnime`);
-                setStatuses(res.data);
-            } catch (err) {
-                console.log(err);
-            }
-        };
-
-        fetchAllFavorites();
-        fetchStatuses();
-    }, [user, logout]);
-
-    // Detectar cambio de tamaño de la ventana y ajustar el límite de elementos por página
     useEffect(() => {
         const updateItemsPerPage = () => {
             const width = window.innerWidth;
@@ -79,64 +53,230 @@ const Favorites = () => {
         window.addEventListener('resize', updateItemsPerPage); // Actualiza al cambiar tamaño de ventana
     
         return () => window.removeEventListener('resize', updateItemsPerPage); // Limpieza del evento
-    }, []);    
+    }, []);
 
-    // Mover la vista al tope al cambiar de página
     useEffect(() => {
-        if (isMobile) { // Solo en dispositivos móviles
-            window.scrollTo({
-                top: 0,
-                left: 0,
-                behavior: 'auto' // Animación suave
-            });
+        // Actualiza la lista de animes cada vez que `itemsPerPage` cambie
+        setCurrentPage(1); // Resetea a la primera página
+        fetchAnime(1, selectedCategories); // Vuelve a hacer la llamada al API con los nuevos límites
+    }, [itemsPerPage]);
+    
+    useEffect(() => {
+        if (!user) {
+            logout();
         }
-    }, [currentPage]);
 
+        const fetchStatuses = async () => {
+            try {
+                const res = await axios.get(`${API}/StatusesAnime`);
+                setStatuses(res.data);
+            } catch (err) {
+                console.log(err);
+            }
+        };
 
-    // Actualizar el estado del anime en la base de datos
-    const handleStatusChangeFavorite = async (anime_id, newStatusId) => {
-        try {
-            await axios.put(`${API}/Favorites/Update/${anime_id}`, {
-                user_id: user.user_id,
-                status_id: newStatusId,
+        const fetchFavorites = async () => {
+            try {
+                const res = await axios.get(`${API}/Favorites?user_id=${user.user_id}`);
+                setFavorites(res.data);
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+        const fetchGenres = async () => {
+            try {
+                const res = await axios.get(`${API}/GenresAnime`);
+                setGenres(res.data);  // Almacena los géneros obtenidos
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+        fetchStatuses();
+        fetchFavorites();
+        fetchGenres();
+        
+    }, [user, logout]);
+
+    const fetchAnime = async (page = 1, selectedCategories = []) => {
+
+        // Limpiar datos anteriores antes de hacer la solicitud
+        setAnimeList([]);
+
+        try { 
+            // Construir la URL de la API correctamente
+            let baseUrl = 'https://api.jikan.moe/v4';
+
+            const queryParams = new URLSearchParams({
+                page: page,
+                limit: 25,
+                order_by: 'episodes',
+                sort: 'desc',
+                min_episodes: 1,
             });
 
-            // Encuentra el anime en la lista local para obtener su título
-            const updatedAnime = favorites.find(fav => fav.anime_id === anime_id);
+            if (search.length > 0) {
+                baseUrl += '/anime';
+                queryParams.append('q', search);
+            }
 
-            // Si no se encuentra, salimos
-            if (!updatedAnime) {
-                console.error("Anime no encontrado en los favoritos locales");
+            if (selectedCategories.length > 0) {
+                baseUrl += '/anime';
+                queryParams.append('genres', selectedCategories.join(','));
+            }
+            
+            // Si no hay búsqueda ni categorías seleccionadas, agregar los parámetros por defecto
+            if (search.length === 0 && selectedCategories.length === 0) {
+                baseUrl += '/seasons/now';
+                queryParams.append('status', 'airing');  // Agregar status por defecto
+            }
+
+            if (user.sfw === 1) {
+                queryParams.append('sfw', true);
+            }
+
+            // Realizar la solicitud con la URL construida
+            const res = await axios.get(`${baseUrl}?${queryParams.toString()}`);
+
+            // Verificar si 'data' existe en la respuesta
+            if (res.data && res.data.data) {
+                // Filtrar duplicados basado en mal_id
+                const uniqueAnimes = res.data.data.filter((anime, index, self) =>
+                    index === self.findIndex((a) => (
+                        a.mal_id === anime.mal_id // Filtra por mal_id para evitar duplicados
+                    ))
+                );
+
+                // Ordenar los resultados si hay un término de búsqueda
+                let orderedAnimes = uniqueAnimes;
+                if (search.length > 0) {
+                    orderedAnimes = uniqueAnimes.sort((a, b) => {
+                        const getMatchScore = (anime) => {
+                            // Busca coincidencias en todos los títulos (Default, Japanese, English)
+                            const titles = anime.titles.map((t) => t.title.toLowerCase());
+                            const matches = titles.filter((t) => t.includes(search.toLowerCase()));
+                            return matches.length > 0 ? 1 : 0;
+                        };
+
+                        // Obtener puntuaciones para las coincidencias
+                        const aScore = getMatchScore(a);
+                        const bScore = getMatchScore(b);
+
+                        // Priorizar animes con coincidencias
+                        if (aScore !== bScore) return bScore - aScore;
+
+                        // Si ambos tienen el mismo score, ordenar alfabéticamente por título por defecto
+                        const aDefaultTitle = a.titles.find((t) => t.type === "Default")?.title || "";
+                        const bDefaultTitle = b.titles.find((t) => t.type === "Default")?.title || "";
+                        return aDefaultTitle.localeCompare(bDefaultTitle);
+                    });
+                }
+
+                // Limitar la cantidad de animes a `itemsPerPage`
+                const paginatedAnimes = orderedAnimes.slice(0, itemsPerPage);
+
+                // Actualizamos la lista de animes
+                setAnimeList(paginatedAnimes);
+                setHasNextPage(res.data.pagination.has_next_page); // Actualiza si hay más páginas
+            } else {
+                console.error("Error: La respuesta no contiene 'data'.");
+            }
+
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const handleSearchChange = (e) => { setSearch(e.target.value); };
+
+    const handleSearchClick = () => {
+        setCurrentPage(1);
+        fetchAnime(1, selectedCategories);
+    };
+
+    const handleCategoryChange = (selectedValues) => {
+        setSelectedCategories(selectedValues); // Actualiza las categorías seleccionadas
+        setCurrentPage(1);  // Resetea a la primera página cuando se cambian los géneros
+        fetchAnime(1, selectedValues);  // Pasa selectedValues directamente a fetchAnime
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        fetchAnime(page, selectedCategories);
+    };
+
+    const handleStatusChangeFavorite = async (anime_id) => {
+        try {
+
+            // Realizar la solicitud a la API de Jikan para obtener los detalles del anime
+            const response = await fetch(`https://api.jikan.moe/v4/anime/${anime_id}`);
+            const animeDetails = await response.json();
+    
+            // Si no se encuentra el anime, salimos
+            if (!animeDetails || !animeDetails.data) {
+                console.error("No se encontraron detalles para el anime con ID:", anime_id);
                 return;
             }
 
-            // Actualiza el estado localmente después de la actualización en la base de datos
-            setFavorites(favorites.map(fav =>
-                fav.anime_id === anime_id ? { ...fav, status_id: newStatusId } : fav
-            ));
+            // Extraer los detalles necesarios
+            const anime = animeDetails.data;
             
-            // Mostrar mensaje de éxito con el título del anime
-            toast.success(`El estado de "${updatedAnime.title}" fue actualizado`);
+            await axios.put(`${API}/Favorites/AddOrUpdate`, {
+                api_id: anime.mal_id,
+                title: anime.title || "Título no disponible",
+                synopsis: anime.synopsis || "Sinopsis no disponible",
+                image_url: anime.images?.jpg?.large_image_url || "",
+                user_id: user.user_id,
+                status_id: "0",
+                year: anime.aired?.prop?.from?.year || "No definido",
+                title_english: anime.title_english || "Título no disponible",
+            }).catch(err => {
+                console.error("Error en la solicitud axios:", err.response || err.message);
+            });
+
+            const existingFavorite = favorites.find(fav => fav.api_id === anime_id);
+            var isNewFavorite = !existingFavorite;
+
+            // Actualizar la lista de favoritos localmente
+            setFavorites(prev => {
+                const favoriteExists = prev.find(fav => fav.api_id === anime_id);
+                if (favoriteExists) {
+                    return prev.map(fav =>
+                        fav.api_id === anime_id ? { ...fav, status_id: 0 } : fav
+                    );
+                } else {
+                    return [
+                        ...prev,
+                        { anime_id, status_id: 0, api_id: anime_id, title: anime.title },
+                    ];
+                }
+            });
+
+            // Mostrar la alerta solo después de la actualización exitosa
+            if (isNewFavorite) {
+                toast.success(`El anime "${anime.title}" fue agregado a favoritos`);
+            } else {
+                toast.success(`El estado de "${anime.title}" fue actualizado`);
+            }
 
         } catch (err) {
-            console.log(err);
+            console.error('Error al cambiar el estado del favorito:', err.message);
         }
     };
-
-    // Eliminar un favorito
+        
     const handleDeleteFavorite = async (anime_id) => {
         try {
-            await axios.delete(`${API}/Favorites/${anime_id}`, {
+            await axios.delete(`${API}/Favorites/API_id/${anime_id}`, {
                 data: { user_id: user.user_id },
             });
 
-            // Eliminar el anime de la lista localmente
-            setFavorites(favorites.filter(fav => fav.anime_id !== anime_id));
+            setFavorites(favorites.filter(fav => fav.api_id !== anime_id));
         } catch (err) {
             console.log(err);
         }
     };
-
+    
     const confirmDeleteFavorite = (anime_id) => {
         toast(
             <div>
@@ -166,174 +306,123 @@ const Favorites = () => {
                 className: "toast-confirmation", // Clase CSS personalizada (opcional)
             }
         );
-    };    
+    };
 
-    const handleSearchChange = (e) => { setSearch(e.target.value); }; // Handle filtering by title
-    const handleStatusChange = (e) => { setStatusFilter(e.value); }; // Handle status filter change
-    const handleSortChange = (value) => { setSortOrder(value); }; // Manejar cambio en el select de ordenación
-
-    // Filter favorites based on title and status
-    const filteredData = favorites.filter(favorito => {
-        const matchesTitle = favorito.title.toLowerCase().includes(search.toLowerCase());
-        const matchesStatus = statusFilter.length === 0 || statusFilter.includes(favorito.status_id);
-        return matchesTitle && matchesStatus;
-    });
-
-    // Filtrar y ordenar favoritos
-    const filteredAndSortedData = filteredData.sort((a, b) => {
-        if (sortOrder === 'name') {
-            return a.title.localeCompare(b.title); // Ordenar por nombre (alfabéticamente)
-        } else if (sortOrder === 'dateAdded') {            
-            const dateComparison = new Date(b.date_added) - new Date(a.date_added); // Ordenar primero por fecha            
-            if (dateComparison === 0) { // Si las fechas son iguales, ordenar por nombre
-                return a.title.localeCompare(b.title); // Si las fechas son iguales, ordenar alfabéticamente por nombre
-            }            
-            return dateComparison; // Si no, devolver el resultado de la comparación de fecha
-        } else {            
-            const dateComparison = new Date(b.date_added) - new Date(a.date_added); // Ordenar primero por fecha
-            if (dateComparison === 0) { // Si las fechas son iguales, ordenar por nombre
-                return a.title.localeCompare(b.title); // Si las fechas son iguales, ordenar alfabéticamente por nombre
-            }            
-            return dateComparison; // Si no, devolver el resultado de la comparación de fecha
-        }
-    });
-        
-    // Paginate filtered data
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const currentItems = filteredAndSortedData.slice(startIndex, startIndex + itemsPerPage);
-    const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-
-    // Crea la lógica para los números de las páginas
     const getPageNumbers = () => {
         const pages = [];
-        const delta = 1; // Cuántas páginas alrededor de la actual se deben mostrar
+        const delta = 1;
 
-        // Mostrar páginas iniciales (si es necesario)
         if (currentPage > delta + 1) {
             pages.push(1);
             if (currentPage > delta + 2) pages.push('...');
         }
 
-        // Páginas cercanas a la página actual
-        for (let i = Math.max(currentPage - delta, 1); i <= Math.min(currentPage + delta, totalPages); i++) {
+        for (let i = Math.max(currentPage - delta, 1); i <= currentPage; i++) {
             pages.push(i);
         }
 
-        // Mostrar páginas finales (si es necesario)
-        if (currentPage < totalPages - delta - 1) {
-            if (currentPage < totalPages - delta - 2) pages.push('...');
-            pages.push(totalPages);
+        if (hasNextPage) {
+            pages.push(currentPage + 1);
         }
 
         return pages;
     };
-
+    
     const isMobile = window.innerWidth <= 768;
 
     return (
         <div>
-
             <div className="filters">
-
                 <input
                     type="text"
-                    placeholder="Buscar favoritos..."
                     value={search}
                     onChange={handleSearchChange}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearchClick()} // Detecta Enter
+                    placeholder="Buscar animes..."
                     className="search-input"
                 />
 
-                {/* Select de estado */}
+                <button onClick={handleSearchClick} className="search-button">Buscar</button>
+
+                {/* Select para categorías múltiples */}    
                 <MultiSelect
-                    value={statusFilter}
-                    options={statuses.map((status) => ({
-                        label: status.status_name,
-                        value: status.status_id
+                    value={selectedCategories}
+                    options={genres.map((genre) => ({
+                        label: genre.name,
+                        value: genre.id
                     }))}
-                    onChange={(e) => handleStatusChange(e)}
-                    placeholder= {isMobile ? <FaFilter className='filter-exp' /> : "Estado"}
-                    maxSelectedLabels={isMobile ? 0 : 1} 
+                    onChange={(e) => handleCategoryChange(e.value)}
+                    placeholder= {isMobile ? <FaFilter className='filter-exp' /> : "Selecciona un género"}
+                    maxSelectedLabels={isMobile ? 0 : 3} 
                     className="w-full md:w-20rem"
                     optionLabel="label"  // Especifica el label para mostrar
+                    filterBy="label"
+                    filter                        
                     showClear={isMobile ? false : true}
-                    panelClassName="multiselect-fav"
-                    selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${statusFilter.length} estados`}
+                    panelClassName="multiselect-exp"
+                    selectedItemsLabel={isMobile ? <FaFilter className='filter-exp' /> : `${selectedCategories.length} géneros seleccionados`}
                     emptyFilterMessage="No se encontraron resultados"
-                />
+                />                
 
-                {/* Nuevo select de ordenación */}
-                <Dropdown
-                    value={sortOrder}  // El valor seleccionado
-                    options={[
-                        { label: "Nombre", value: "name" },
-                        { label: "Fecha de agregado", value: "dateAdded" },
-                    ]}
-                    onChange={(e) => handleSortChange(e.value)}  // Cuando se selecciona una nueva opción
-                    placeholder={isMobile ? `<IoFilter className="filter-exp" />` : "Ordenar"}
-                    className="w-full md:w-20rem"
-                    optionLabel="label"
-                    panelClassName="multiselect-fav"
-                    showClear={isMobile ? false : true}
-                    valueTemplate={isMobile ? <IoFilter className="filter-exp" /> : sortOrder.label }
-                    emptyFilterMessage="No se encontraron resultados"
-                />
             </div>
 
             <div className="favoritos">
-                {currentItems.map((favorito) => (
-                    <div className="favorito" key={favorito.anime_id}>
-                        {favorito.image_url && <img src={favorito.image_url} alt={favorito.title} />}
-                        
-                        <div className="favorito-contenido">
-                            <h2>{favorito.title}</h2>
-                            <p>{favorito.description}</p>
-                            
+                {animeList.map((anime) => {
+                    const favorite = favorites.find(fav => fav.api_id === anime.mal_id);
+
+                    return (
+                        <div className="favorito" key={anime.mal_id}>
+                            {anime.images?.jpg?.large_image_url && (
+                                <img src={anime.images.jpg.large_image_url} alt={anime.title} />
+                            )}
+
+                            <div className="favorito-contenido">
+                                <h2>{anime.title ? anime.title : "Título no disponible"}</h2>
+                                <p>{anime.synopsis ? anime.synopsis : "Sinopsis no disponible"}</p>
+
                             <div className="status-container">
+                                {/* Botón de agregar */}
+                                {!favorite && (
+                                    <button
+                                        className="success-btn"
+                                        onClick={() => handleStatusChangeFavorite(anime.mal_id)} 
+                                    >
+                                        <span className='fav-span'>Agregar a Favoritos </span><FaRegHeart className="exp-icon"/>
+                                    </button>
+                                )}
 
-                                {/* Select para cambiar el estado */}
-                                <Dropdown
-                                    value={favorito.status_id} // El valor seleccionado
-                                    options={statuses.map((status) => ({
-                                        label: status.status_name,
-                                        value: status.status_id,
-                                    }))} // Opciones del dropdown
-                                    onChange={(e) => handleStatusChangeFavorite(favorito.anime_id, parseInt(e.value)) } // Evento cuando cambie la selección
-                                    className="w-full md:w-20rem status-dropdown" // Clases personalizadas
-                                    panelClassName="dropdown-panel" // Panel de opciones
-                                />
-
-                                {/* Botón de eliminar favorito */}
-                                <button
-                                    className="delete-btn-fav"
-                                    onClick={() => confirmDeleteFavorite(favorito.anime_id)}
-                                >
-                                    <FaTrashAlt className="fav-icon"/>
-                                </button>
+                                {/* Botón de eliminar */}
+                                {favorite && (
+                                    <button
+                                        className="delete-btn"
+                                        onClick={() => confirmDeleteFavorite(anime.mal_id)}
+                                    >
+                                        <span className='fav-span'>Eliminar de Favoritos</span><FaTrashAlt className="exp-icon"/>
+                                    </button>
+                                )}
                             </div>
                         </div>
-
-                    </div>
-                ))}
+                        </div>
+                    );
+                })}
             </div>
 
             {/* Paginación */}
             <div className="pagination">
-                {/* Botón de "Anterior" */}
-                <button 
-                    hidden={currentPage === 1 || totalPages === 0}
-                    onClick={() => setCurrentPage(currentPage - 1)}
+                <button
+                    hidden={currentPage === 1}
+                    onClick={() => handlePageChange(currentPage - 1)}
                 >
                     &lt;&lt;
                 </button>
 
-                {/* Números de páginas */}
                 {getPageNumbers().map((page, index) => (
                     page === "..." ? (
                         <span key={index} className="dots">...</span>
                     ) : (
                         <button
                             key={index}
-                            onClick={() => setCurrentPage(page)}
+                            onClick={() => handlePageChange(page)}
                             className={page === currentPage ? "active" : ""}
                         >
                             {page}
@@ -341,10 +430,9 @@ const Favorites = () => {
                     )
                 ))}
 
-                {/* Botón de "Siguiente" */}
-                <button 
-                    hidden={currentPage === totalPages || totalPages === 0}
-                    onClick={() => setCurrentPage(currentPage + 1)}
+                <button
+                    hidden={!hasNextPage}
+                    onClick={() => handlePageChange(currentPage + 1)}
                 >
                     &gt;&gt;
                 </button>
@@ -354,4 +442,4 @@ const Favorites = () => {
     );
 };
 
-export default Favorites
+export default Explorer;

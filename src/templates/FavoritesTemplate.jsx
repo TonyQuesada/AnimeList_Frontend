@@ -5,6 +5,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Dropdown } from 'primereact/dropdown';
 import 'react-toastify/dist/ReactToastify.css';
 import '../assets/styles/style.css';
+import { HiSwitchHorizontal } from "react-icons/hi";
 
 const FavoritesTemplate = ({
     statuses,
@@ -21,12 +22,31 @@ const FavoritesTemplate = ({
     confirmDeleteFavorite,
     getPageNumbers,
     currentItems,
-    totalPages
+    totalPages,
+    typeShow,
+    handleTypeChange
 }) => {
 
     return (
         <div>
             <div className="filters">
+                            
+                <Dropdown
+                    value={typeShow}
+                    options={[
+                        { label: "Anime", value: "anime" },
+                        { label: "Manga", value: "manga" },
+                    ]}
+                    onChange={(e) => handleTypeChange(e.value)}
+                    placeholder={isMobile ? `<IoFilter className="filter-exp" />` : "Formato"}
+                    className="w-full md:w-20rem"
+                    optionLabel="label"
+                    panelClassName="multiselect-fav"
+                    showClear={isMobile ? false : true}
+                    valueTemplate={isMobile ? <HiSwitchHorizontal  className="filter-exp" /> : typeShow.label }
+                    emptyFilterMessage="No se encontraron resultados"
+                />
+
                 <input
                     type="text"
                     placeholder="Buscar favoritos..."
